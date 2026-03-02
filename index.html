@@ -4,27 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大一生活模拟器</title>
+    <!-- 外部样式文件 -->
+    <link rel="stylesheet" href="ui-style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: #1a1a1a;
-            color: #fff;
-            padding: 20px;
+        /* 游戏专属样式（不通用的部分） */
+        .game-container {
             max-width: 800px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .game-title {
             text-align: center;
             font-size: 2.2rem;
             margin-bottom: 30px;
-            color: #f0f0f0;
+            color: var(--color-text-light);
         }
 
         .week-info {
@@ -41,92 +35,7 @@
             margin-bottom: 40px;
         }
 
-        .scene-btn {
-            padding: 25px 10px;
-            font-size: 1.2rem;
-            background-color: #333;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            min-height: 100px;
-        }
-
-        .scene-btn:hover {
-            background-color: #444;
-        }
-
-        .event-container {
-            display: none;
-            background-color: #222;
-            border-radius: 10px;
-            padding: 30px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .event-title {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            color: #f0f0f0;
-        }
-
-        .event-option-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .event-option-btn {
-            padding: 20px 10px;
-            font-size: 1.1rem;
-            background-color: #333;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .event-option-btn:hover {
-            background-color: #444;
-        }
-
-        .stats-container {
-            margin-top: 40px;
-        }
-
-        .stat-item {
-            margin-bottom: 20px;
-        }
-
-        .stat-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        .stat-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #2d2d2d;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .stat-progress {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-
-        .gpa { background-color: #4a90e2; }
-        .social { background-color: #7ed321; }
-        .health { background-color: #ff5a5f; }
-        .money { background-color: #f5a623; }
-
+        /* 弹窗样式 */
         .modal {
             position: fixed;
             top: 0;
@@ -144,7 +53,7 @@
         .modal-content {
             background-color: #222;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: var(--radius-lg);
             width: 90%;
             max-width: 500px;
             text-align: center;
@@ -155,27 +64,28 @@
             margin-bottom: 25px;
         }
 
-        .option-buttons {
+        .option-buttons, .event-option-buttons {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        .option-btn {
+        .option-btn, .event-option-btn {
             padding: 20px 10px;
             font-size: 1.1rem;
             background-color: #333;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             color: #fff;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color var(--transition-fast);
         }
 
-        .option-btn:hover {
+        .option-btn:hover, .event-option-btn:hover {
             background-color: #444;
         }
 
+        /* 提示框样式 */
         .toast {
             position: fixed;
             top: 50%;
@@ -183,13 +93,15 @@
             transform: translate(-50%, -50%);
             background-color: rgba(0,0,0,0.9);
             padding: 25px 40px;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             font-size: 1.3rem;
             z-index: 1001;
             display: none;
             text-align: center;
+            color: white;
         }
 
+        /* 结局弹窗样式 */
         .ending-modal {
             position: fixed;
             top: 0;
@@ -238,654 +150,579 @@
             font-size: 1.2rem;
             background-color: #4a90e2;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             color: #fff;
             cursor: pointer;
             margin-top: 20px;
+            transition: background-color var(--transition-fast);
         }
 
+        .restart-btn:hover {
+            background-color: #357abd;
+        }
+
+        /* 通用隐藏类 */
         .hidden {
-            display: none;
+            display: none !important;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.8rem;
+            }
+            
+            .week-info {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
-<body>
+<body class="dark-mode">
+    <div class="game-container">
+        <h1 class="game-title">大一生活模拟器</h1>
+        <div class="week-info" id="weekDisplay">第1周</div>
 
-    <h1 class="game-title">大一生活模拟器</h1>
-    <div class="week-info" id="weekDisplay">第1周</div>
+        <!-- 随机事件容器 -->
+        <div class="event-container hidden" id="eventContainer">
+            <h2 class="event-title" id="eventTitle"></h2>
+            <div class="event-option-buttons" id="eventOptionButtons"></div>
+        </div>
 
-    <div class="event-container" id="eventContainer">
-        <h2 class="event-title" id="eventTitle"></h2>
-        <div class="event-option-buttons" id="eventOptionButtons"></div>
+        <!-- 场景按钮容器 -->
+        <div class="scene-buttons" id="sceneButtonsContainer">
+            <button class="scene-btn" data-scene="dorm">
+                <img src="https://img.icons8.com/ios-filled/200/1E50B3/bedroom.png" alt="宿舍" class="scene-icon">
+                宿舍
+            </button>
+            <button class="scene-btn" data-scene="library">
+                <img src="https://img.icons8.com/ios-filled/200/1E50B3/library.png" alt="图书馆" class="scene-icon">
+                图书馆
+            </button>
+            <button class="scene-btn" data-scene="canteen">
+                <img src="https://img.icons8.com/ios-filled/200/1E50B3/restaurant.png" alt="食堂" class="scene-icon">
+                食堂
+            </button>
+            <button class="scene-btn" data-scene="playground">
+                <img src="https://img.icons8.com/ios-filled/200/1E50B3/sport.png" alt="操场" class="scene-icon">
+                操场
+            </button>
+            <button class="scene-btn" data-scene="club">
+                <img src="https://img.icons8.com/ios-filled/200/1E50B3/team.png" alt="社团" class="scene-icon">
+                社团
+            </button>
+            <button class="scene-btn" data-scene="parttime">
+                <img src="https://img.icons8.com/ios-filled/200/1E50B3/work.png" alt="兼职" class="scene-icon">
+                兼职
+            </button>
+        </div>
+
+        <!-- 属性统计容器 -->
+        <div class="stats-container">
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>绩点</span>
+                    <span id="gpaValue">50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill gpa" id="gpaBar" style="width:50%"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>社交</span>
+                    <span id="socialValue">50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill social" id="socialBar" style="width:50%"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>健康</span>
+                    <span id="healthValue">50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill health" id="healthBar" style="width:50%"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>金钱</span>
+                    <span id="moneyValue">50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill money" id="moneyBar" style="width:50%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 场景弹窗 -->
+        <div class="modal hidden" id="sceneModal">
+            <div class="modal-content">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <div class="option-buttons" id="optionButtons"></div>
+            </div>
+        </div>
+
+        <!-- 提示框 -->
+        <div class="toast" id="toast"></div>
+
+        <!-- 结局弹窗 -->
+        <div class="ending-modal hidden" id="endingModal">
+            <div class="ending-content">
+                <h2 class="ending-title" id="endingTitle"></h2>
+                <p class="ending-desc" id="endingDesc"></p>
+                <div class="ending-stats" id="endingStats"></div>
+                <button class="restart-btn" id="restartBtn">重新开始大学</button>
+            </div>
+        </div>
     </div>
 
-    <div class="scene-buttons" id="sceneButtonsContainer">
-        <button class="scene-btn" data-scene="dorm">宿舍</button>
-        <button class="scene-btn" data-scene="library">图书馆</button>
-        <button class="scene-btn" data-scene="canteen">食堂</button>
-        <button class="scene-btn" data-scene="playground">操场</button>
-        <button class="scene-btn" data-scene="club">社团</button>
-        <button class="scene-btn" data-scene="parttime">兼职</button>
-    </div>
+    <script>
+        // ========== 游戏核心数据 ==========
+        const GAME_CONFIG = {
+            MAX_WEEK: 16, // 大一总周数
+            STAT_MIN: 0,  // 属性最小值
+            STAT_MAX: 100 // 属性最大值
+        };
 
-    <div class="stats-container">
-        <div class="stat-item">
-            <div class="stat-label"><span>绩点</span><span id="gpaValue">50</span></div>
-            <div class="stat-bar"><div class="stat-progress gpa" id="gpaBar" style="width:50%"></div></div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-label"><span>社交</span><span id="socialValue">50</span></div>
-            <div class="stat-bar"><div class="stat-progress social" id="socialBar" style="width:50%"></div></div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-label"><span>健康</span><span id="healthValue">50</span></div>
-            <div class="stat-bar"><div class="stat-progress health" id="healthBar" style="width:50%"></div></div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-label"><span>金钱</span><span id="moneyValue">50</span></div>
-            <div class="stat-bar"><div class="stat-progress money" id="moneyBar" style="width:50%"></div></div>
-        </div>
-    </div>
+        // 初始化游戏数据
+        let gameData = {
+            week: 1,
+            stats: { 
+                gpa: 50,    // 绩点
+                social: 50, // 社交
+                health: 50, // 健康
+                money: 50   // 金钱
+            }
+        };
 
-    <div class="modal hidden" id="sceneModal">
-        <div class="modal-content">
-            <h2 class="modal-title" id="modalTitle"></h2>
-            <div class="option-buttons" id="optionButtons"></div>
-        </div>
-    </div>
+        // ========== 场景配置 ==========
+        const sceneConfig = {
+            dorm: {
+                name: "宿舍",
+                options: [
+                    { text: "打游戏", changes: { gpa: -5, social: +5, health: -3, money: 0 } },
+                    { text: "睡觉", changes: { gpa: 0, social: -2, health: +10, money: 0 } },
+                    { text: "追剧", changes: { gpa: -3, social: +2, health: -1, money: 0 } }
+                ]
+            },
+            library: {
+                name: "图书馆",
+                options: [
+                    { text: "刷题", changes: { gpa: +10, social: -5, health: -2, money: 0 } },
+                    { text: "发呆", changes: { gpa: 0, social: 0, health: 0, money: 0 } },
+                    { text: "占座", changes: { gpa: +2, social: -3, health: -1, money: 0 } }
+                ]
+            },
+            canteen: {
+                name: "食堂",
+                options: [
+                    { text: "吃大餐", changes: { gpa: 0, social: +3, health: +5, money: -10 } },
+                    { text: "吃泡面", changes: { gpa: 0, social: 0, health: -2, money: -2 } },
+                    { text: "蹭饭", changes: { gpa: 0, social: +8, health: +3, money: 0 } }
+                ]
+            },
+            playground: {
+                name: "操场",
+                options: [
+                    { text: "跑步", changes: { gpa: 0, social: 0, health: +10, money: 0 } },
+                    { text: "打球", changes: { gpa: 0, social: +8, health: +5, money: 0 } },
+                    { text: "散步", changes: { gpa: 0, social: +3, health: +3, money: 0 } }
+                ]
+            },
+            club: {
+                name: "社团",
+                options: [
+                    { text: "参加活动", changes: { gpa: -3, social: +10, health: -1, money: -5 } },
+                    { text: "当干事", changes: { gpa: -5, social: +8, health: -3, money: 0 } },
+                    { text: "摸鱼", changes: { gpa: 0, social: +2, health: 0, money: 0 } }
+                ]
+            },
+            parttime: {
+                name: "兼职",
+                options: [
+                    { text: "发传单", changes: { gpa: 0, social: +2, health: -5, money: +20 } },
+                    { text: "家教", changes: { gpa: +5, social: +3, health: -3, money: +50 } },
+                    { text: "奶茶店打工", changes: { gpa: -2, social: +5, health: -4, money: +30 } }
+                ]
+            }
+        };
 
-    <div class="toast" id="toast"></div>
+        // ========== 随机事件配置 ==========
+        const eventLibrary = [
+            {
+                title: "随机事件：捡到100元",
+                options: [
+                    { text: "上交辅导员", changes: { gpa: +5, social: +3, money: 0 } },
+                    { text: "自己留着花", changes: { gpa: -3, money: +100 } },
+                    { text: "请室友喝奶茶", changes: { social: +10, money: -50 } }
+                ]
+            },
+            {
+                title: "随机事件：感冒了",
+                options: [
+                    { text: "硬扛上课", changes: { gpa: +2, health: -10 } },
+                    { text: "请假休息", changes: { gpa: -5, health: +5 } },
+                    { text: "买药吃", changes: { health: +3, money: -15 } }
+                ]
+            },
+            {
+                title: "随机事件：收到表白",
+                options: [
+                    { text: "答应对方", changes: { gpa: -8, social: +15, health: +2, money: -20 } },
+                    { text: "委婉拒绝", changes: { social: -5 } },
+                    { text: "假装没看见", changes: { gpa: +2, social: -8 } }
+                ]
+            },
+            {
+                title: "随机事件：考试临近",
+                options: [
+                    { text: "通宵复习", changes: { gpa: +15, health: -10 } },
+                    { text: "佛系摆烂", changes: { gpa: -10, social: +5 } },
+                    { text: "抱学霸大腿", changes: { gpa: +8, social: +8, money: -10 } }
+                ]
+            },
+            {
+                title: "随机事件：宿舍查寝",
+                options: [
+                    { text: "提前收拾", changes: { social: +5 } },
+                    { text: "假装不在", changes: { social: -3 } },
+                    { text: "贿赂舍长", changes: { social: +3, money: -20 } }
+                ]
+            }
+        ];
 
-    <div class="ending-modal" id="endingModal">
-        <div class="ending-content">
-            <h2 class="ending-title" id="endingTitle"></h2>
-            <p class="ending-desc" id="endingDesc"></p>
-            <div class="ending-stats" id="endingStats"></div>
-            <button class="restart-btn" id="restartBtn">重新开始大学</button>
-        </div>
-    </div>
+        // 扩展随机事件（2.0新增）
+        const campusEvents = [
+            {
+                desc: "早八课老师突然点名，你选择：",
+                options: [
+                    {"text": "火速赶到", changes: { gpa: 5, health: -3 }},
+                    {"text": "请假", changes: { social: -2, health: 2 }},
+                    {"text": "翘课", changes: { gpa: -5, money: 2 }}
+                ]
+            },
+            {
+                desc: "食堂排队人巨多，马上要上课了，你选择：",
+                options: [
+                    {"text": "继续排队", changes: { gpa: -3, health: 2 }},
+                    {"text": "买面包带走", changes: { money: -3, health: 1 }},
+                    {"text": "插队快速买饭", changes: { social: -5, gpa: 2 }}
+                ]
+            },
+            {
+                desc: "小组作业队友全躺平，你选择：",
+                options: [
+                    {"text": "自己做完", changes: { gpa: 5, health: -3 }},
+                    {"text": "催队友一起做", changes: { social: -2, gpa: 3 }},
+                    {"text": "一起划水", changes: { gpa: -5, health: 2 }}
+                ]
+            },
+            {
+                desc: "晚上宿舍断电断网，你选择：",
+                options: [
+                    {"text": "用流量赶作业", changes: { gpa: 3, money: -2 }},
+                    {"text": "直接睡觉", changes: { health: 3, gpa: -2 }},
+                    {"text": "和室友聊天", changes: { social: 3, health: -1 }}
+                ]
+            },
+            {
+                desc: "体测800米/1000米轮到你了，你选择：",
+                options: [
+                    {"text": "全力跑完", changes: { health: -3, social: 3 }},
+                    {"text": "慢慢慢跑", changes: { health: 1, gpa: -2 }},
+                    {"text": "申请缓测", changes: { gpa: -3, health: 3 }}
+                ]
+            }
+            // 其他事件省略（可按需添加）
+        ];
 
-<script>
-    let gameData = {
-        week: 1,
-        stats: { gpa: 50, social: 50, health: 50, money: 50 }
-    };
+        // 合并所有事件
+        const allEvents = [...eventLibrary, ...campusEvents.map(item => ({
+            title: item.desc,
+            options: item.options
+        }))];
 
-    const sceneConfig = {
-        dorm: {
-            name: "宿舍",
-            options: [
-                { text: "打游戏", changes: { gpa: -5, social: +5, health: -3, money: 0 } },
-                { text: "睡觉", changes: { gpa: 0, social: -2, health: +10, money: 0 } },
-                { text: "追剧", changes: { gpa: -3, social: +2, health: -1, money: 0 } }
-            ]
-        },
-        library: {
-            name: "图书馆",
-            options: [
-                { text: "刷题", changes: { gpa: +10, social: -5, health: -2, money: 0 } },
-                { text: "发呆", changes: { gpa: 0, social: 0, health: 0, money: 0 } },
-                { text: "占座", changes: { gpa: +2, social: -3, health: -1, money: 0 } }
-            ]
-        },
-        canteen: {
-            name: "食堂",
-            options: [
-                { text: "吃大餐", changes: { gpa: 0, social: +3, health: +5, money: -10 } },
-                { text: "吃泡面", changes: { gpa: 0, social: 0, health: -2, money: -2 } },
-                { text: "蹭饭", changes: { gpa: 0, social: +8, health: +3, money: 0 } }
-            ]
-        },
-        playground: {
-            name: "操场",
-            options: [
-                { text: "跑步", changes: { gpa: 0, social: 0, health: +10, money: 0 } },
-                { text: "打球", changes: { gpa: 0, social: +8, health: +5, money: 0 } },
-                { text: "散步", changes: { gpa: 0, social: +3, health: +3, money: 0 } }
-            ]
-        },
-        club: {
-            name: "社团",
-            options: [
-                { text: "参加活动", changes: { gpa: -3, social: +10, health: -1, money: -5 } },
-                { text: "当干事", changes: { gpa: -5, social: +8, health: -3, money: 0 } },
-                { text: "摸鱼", changes: { gpa: 0, social: +2, health: 0, money: 0 } }
-            ]
-        },
-        parttime: {
-            name: "兼职",
-            options: [
-                { text: "发传单", changes: { gpa: 0, social: +2, health: -5, money: +20 } },
-                { text: "家教", changes: { gpa: +5, social: +3, health: -3, money: +50 } },
-                { text: "奶茶店打工", changes: { gpa: -2, social: +5, health: -4, money: +30 } }
-            ]
+        // ========== DOM 元素获取 ==========
+        const dom = {
+            weekDisplay: document.getElementById('weekDisplay'),
+            sceneButtonsContainer: document.getElementById('sceneButtonsContainer'),
+            eventContainer: document.getElementById('eventContainer'),
+            eventTitle: document.getElementById('eventTitle'),
+            eventOptionButtons: document.getElementById('eventOptionButtons'),
+            sceneModal: document.getElementById('sceneModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            optionButtons: document.getElementById('optionButtons'),
+            toast: document.getElementById('toast'),
+            endingModal: document.getElementById('endingModal'),
+            endingTitle: document.getElementById('endingTitle'),
+            endingDesc: document.getElementById('endingDesc'),
+            endingStats: document.getElementById('endingStats'),
+            restartBtn: document.getElementById('restartBtn'),
+            statElements: {
+                gpa: { bar: document.getElementById('gpaBar'), value: document.getElementById('gpaValue') },
+                social: { bar: document.getElementById('socialBar'), value: document.getElementById('socialValue') },
+                health: { bar: document.getElementById('healthBar'), value: document.getElementById('healthValue') },
+                money: { bar: document.getElementById('moneyBar'), value: document.getElementById('moneyValue') }
+            }
+        };
+
+        // ========== 工具函数 ==========
+        /**
+         * 保存游戏数据到本地存储
+         */
+        function saveGame() {
+            try {
+                localStorage.setItem('freshmanSimData', JSON.stringify(gameData));
+            } catch (e) {
+                console.warn('保存游戏数据失败:', e);
+            }
         }
-    };
 
-    const eventLibrary = [
-        {
-            title: "随机事件：捡到100元",
-            options: [
-                { text: "上交辅导员", changes: { gpa: +5, social: +3, money: 0 } },
-                { text: "自己留着花", changes: { gpa: -3, money: +100 } },
-                { text: "请室友喝奶茶", changes: { social: +10, money: -50 } }
-            ]
-        },
-        {
-            title: "随机事件：感冒了",
-            options: [
-                { text: "硬扛上课", changes: { gpa: +2, health: -10 } },
-                { text: "请假休息", changes: { gpa: -5, health: +5 } },
-                { text: "买药吃", changes: { health: +3, money: -15 } }
-            ]
-        },
-        {
-            title: "随机事件：收到表白",
-            options: [
-                { text: "答应对方", changes: { gpa: -8, social: +15, health: +2, money: -20 } },
-                { text: "委婉拒绝", changes: { social: -5 } },
-                { text: "假装没看见", changes: { gpa: +2, social: -8 } }
-            ]
-        },
-        {
-            title: "随机事件：考试临近",
-            options: [
-                { text: "通宵复习", changes: { gpa: +15, health: -10 } },
-                { text: "佛系摆烂", changes: { gpa: -10, social: +5 } },
-                { text: "抱学霸大腿", changes: { gpa: +8, social: +8, money: -10 } }
-            ]
-        },
-        {
-            title: "随机事件：宿舍查寝",
-            options: [
-                { text: "提前收拾", changes: { social: +5 } },
-                { text: "假装不在", changes: { social: -3 } },
-                { text: "贿赂舍长", changes: { social: +3, money: -20 } }
-            ]
+        /**
+         * 从本地存储加载游戏数据
+         */
+        function loadGame() {
+            try {
+                const saved = localStorage.getItem('freshmanSimData');
+                if (saved) {
+                    const parsedData = JSON.parse(saved);
+                    // 验证数据结构
+                    if (parsedData.week && parsedData.stats) {
+                        gameData = parsedData;
+                    }
+                }
+            } catch (e) {
+                console.warn('加载游戏数据失败，使用默认数据:', e);
+            }
         }
-    ];
 
-    const sceneModal = document.getElementById('sceneModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const optionButtons = document.getElementById('optionButtons');
-    const weekDisplay = document.getElementById('weekDisplay');
-    const toast = document.getElementById('toast');
-    const sceneButtonsContainer = document.getElementById('sceneButtonsContainer');
-    const eventContainer = document.getElementById('eventContainer');
-    const eventTitle = document.getElementById('eventTitle');
-    const eventOptionButtons = document.getElementById('eventOptionButtons');
-    const endingModal = document.getElementById('endingModal');
-    const endingTitle = document.getElementById('endingTitle');
-    const endingDesc = document.getElementById('endingDesc');
-    const endingStats = document.getElementById('endingStats');
-    const restartBtn = document.getElementById('restartBtn');
-
-    const statElements = {
-        gpa: { bar: document.getElementById('gpaBar'), value: document.getElementById('gpaValue') },
-        social: { bar: document.getElementById('socialBar'), value: document.getElementById('socialValue') },
-        health: { bar: document.getElementById('healthBar'), value: document.getElementById('healthValue') },
-        money: { bar: document.getElementById('moneyBar'), value: document.getElementById('moneyValue') }
-    };
-
-    function initGame() {
-        const saved = localStorage.getItem('freshmanSimData');
-        if (saved) gameData = JSON.parse(saved);
-        updateUI();
-        checkEnding();
-        checkRandomEvent();
-    }
-
-    function checkRandomEvent() {
-        sceneButtonsContainer.style.display = 'grid';
-        eventContainer.style.display = 'none';
-        if (Math.random() <= 0.3) {
-            const evt = eventLibrary[Math.floor(Math.random() * eventLibrary.length)];
-            showRandomEvent(evt);
+        /**
+         * 更新属性值（带边界校验）
+         * @param {Object} changes - 属性变化值
+         */
+        function applyStatChanges(changes) {
+            for (let stat in changes) {
+                if (gameData.stats.hasOwnProperty(stat)) {
+                    const newValue = gameData.stats[stat] + (changes[stat] || 0);
+                    gameData.stats[stat] = Math.max(GAME_CONFIG.STAT_MIN, Math.min(GAME_CONFIG.STAT_MAX, newValue));
+                }
+            }
+            saveGame();
+            updateUI();
         }
-    }
 
-    function showRandomEvent(evt) {
-        sceneButtonsContainer.style.display = 'none';
-        eventContainer.style.display = 'block';
-        eventTitle.textContent = evt.title;
-        eventOptionButtons.innerHTML = '';
-        evt.options.forEach((opt, i) => {
-            const b = document.createElement('button');
-            b.className = 'event-option-btn';
-            b.textContent = `${i+1}. ${opt.text}`;
-            b.onclick = () => {
-                applyStatChanges(opt.changes);
-                nextWeek();
+        /**
+         * 更新UI显示
+         */
+        function updateUI() {
+            // 更新周数显示
+            dom.weekDisplay.textContent = `第${gameData.week}周`;
+            
+            // 更新属性进度条和数值
+            for (let stat in gameData.stats) {
+                if (dom.statElements[stat]) {
+                    const value = gameData.stats[stat];
+                    dom.statElements[stat].value.textContent = value;
+                    dom.statElements[stat].bar.style.width = `${value}%`;
+                    
+                    // 触发进度条闪烁动画
+                    dom.statElements[stat].bar.classList.add('flash');
+                    setTimeout(() => {
+                        dom.statElements[stat].bar.classList.remove('flash');
+                    }, 1000);
+                }
+            }
+        }
+
+        /**
+         * 显示提示框
+         * @param {string} msg - 提示信息
+         */
+        function showToast(msg) {
+            dom.toast.textContent = msg;
+            dom.toast.style.display = 'block';
+            setTimeout(() => {
+                dom.toast.style.display = 'none';
+            }, 2000);
+        }
+
+        /**
+         * 进入下一周
+         */
+        function nextWeek() {
+            gameData.week++;
+            showToast(`第${gameData.week - 1}周结束`);
+            
+            // 检查是否到达结局
+            const isEnd = checkEnding();
+            if (!isEnd) {
+                // 触发随机事件
+                checkRandomEvent();
+            }
+        }
+
+        // ========== 事件处理函数 ==========
+        /**
+         * 检查并触发随机事件
+         */
+        function checkRandomEvent() {
+            // 显示场景按钮，隐藏事件容器
+            dom.sceneButtonsContainer.classList.remove('hidden');
+            dom.eventContainer.classList.add('hidden');
+            
+            // 30%概率触发随机事件
+            if (Math.random() <= 0.3) {
+                const randomEvent = allEvents[Math.floor(Math.random() * allEvents.length)];
+                showRandomEvent(randomEvent);
+            }
+        }
+
+        /**
+         * 显示随机事件弹窗
+         * @param {Object} event - 事件配置
+         */
+        function showRandomEvent(event) {
+            // 隐藏场景按钮，显示事件容器
+            dom.sceneButtonsContainer.classList.add('hidden');
+            dom.eventContainer.classList.remove('hidden');
+            
+            dom.eventTitle.textContent = event.title || event.desc;
+            dom.eventOptionButtons.innerHTML = '';
+            
+            event.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'event-option-btn';
+                btn.textContent = `${index + 1}. ${opt.text}`;
+                btn.addEventListener('click', () => {
+                    applyStatChanges(opt.changes || opt.attr);
+                    nextWeek();
+                });
+                dom.eventOptionButtons.appendChild(btn);
+            });
+        }
+
+        /**
+         * 打开场景选择弹窗
+         * @param {string} sceneKey - 场景标识
+         */
+        function openSceneModal(sceneKey) {
+            const scene = sceneConfig[sceneKey];
+            if (!scene) return;
+            
+            dom.modalTitle.textContent = scene.name;
+            dom.optionButtons.innerHTML = '';
+            
+            scene.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = `${index + 1}. ${opt.text}`;
+                btn.addEventListener('click', () => {
+                    applyStatChanges(opt.changes);
+                    dom.sceneModal.classList.add('hidden');
+                    nextWeek();
+                });
+                dom.optionButtons.appendChild(btn);
+            });
+            
+            dom.sceneModal.classList.remove('hidden');
+        }
+
+        /**
+         * 检查游戏结局
+         * @returns {boolean} - 是否到达结局
+         */
+        function checkEnding() {
+            if (gameData.week <= GAME_CONFIG.MAX_WEEK) return false;
+
+            const { gpa, social, money, health } = gameData.stats;
+            let title, desc;
+
+            if (gpa > 80) {
+                title = "🎉 保研预备役";
+                desc = "大一就打下了坚实基础，保研稳了！";
+            } else if (social > 80) {
+                title = "🌟 社团风云人物";
+                desc = "人脉拉满，校园里无人不识！";
+            } else if (money > 80) {
+                title = "💸 兼职小老板";
+                desc = "经济独立，大学生活自由又滋润！";
+            } else if (gpa < 20) {
+                title = "⚠️ 留级警告";
+                desc = "学业严重亮起红灯，再不努力就要留级了！";
+            } else if (health < 10) {
+                title = "🤒 体测危机";
+                desc = "身体被掏空，体测根本过不了！";
+            } else {
+                title = "📚 平凡大学生";
+                desc = "平平淡淡才是真，平安度过大一。";
+            }
+
+            // 更新结局弹窗内容
+            dom.endingTitle.textContent = title;
+            dom.endingDesc.textContent = desc;
+            dom.endingStats.innerHTML = `
+                绩点：${gpa}<br>
+                社交：${social}<br>
+                健康：${health}<br>
+                金钱：${money}
+            `;
+            
+            // 显示结局弹窗
+            dom.endingModal.classList.remove('hidden');
+            return true;
+        }
+
+        /**
+         * 重置游戏
+         */
+        function resetGame() {
+            gameData = { 
+                week: 1, 
+                stats: { gpa: 50, social: 50, health: 50, money: 50 } 
             };
-            eventOptionButtons.appendChild(b);
-        });
-    }
-
-    function applyStatChanges(changes) {
-        for (let s in changes) {
-            gameData.stats[s] = Math.max(0, Math.min(100, gameData.stats[s] + (changes[s] || 0)));
-        }
-        saveGame();
-    }
-
-    function nextWeek() {
-        gameData.week++;
-        showToast(`第${gameData.week - 1}周结束`);
-        updateUI();
-        const ended = checkEnding();
-        if (!ended) checkRandomEvent();
-    }
-
-    function updateUI() {
-        weekDisplay.textContent = `第${gameData.week}周`;
-        for (let s in gameData.stats) {
-            statElements[s].value.textContent = gameData.stats[s];
-            statElements[s].bar.style.width = gameData.stats[s] + '%';
-        }
-        saveGame();
-    }
-
-    function saveGame() {
-        localStorage.setItem('freshmanSimData', JSON.stringify(gameData));
-    }
-
-    function openSceneModal(key) {
-        const sc = sceneConfig[key];
-        modalTitle.textContent = sc.name;
-        optionButtons.innerHTML = '';
-        sc.options.forEach((opt, i) => {
-            const b = document.createElement('button');
-            b.className = 'option-btn';
-            b.textContent = `${i+1}. ${opt.text}`;
-            b.onclick = () => {
-                applyStatChanges(opt.changes);
-                sceneModal.classList.add('hidden');
-                nextWeek();
-            };
-            optionButtons.appendChild(b);
-        });
-        sceneModal.classList.remove('hidden');
-    }
-
-    function showToast(msg) {
-        toast.textContent = msg;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 2000);
-    }
-
-campus_events = [
-    {
-        "desc": "早八课老师突然点名，你选择：",
-        "options": [
-            {"text": "火速赶到", "attr": {"grade": 5, "health": -3}},
-            {"text": "请假", "attr": {"social": -2, "health": 2}},
-            {"text": "翘课", "attr": {"grade": -5, "money": 2}}
-        ]
-    },
-    {
-        "desc": "食堂排队人巨多，马上要上课了，你选择：",
-        "options": [
-            {"text": "继续排队", "attr": {"grade": -3, "health": 2}},
-            {"text": "买面包带走", "attr": {"money": -3, "health": 1}},
-            {"text": "插队快速买饭", "attr": {"social": -5, "grade": 2}}
-        ]
-    },
-    {
-        "desc": "小组作业队友全躺平，你选择：",
-        "options": [
-            {"text": "自己做完", "attr": {"grade": 5, "health": -3}},
-            {"text": "催队友一起做", "attr": {"social": -2, "grade": 3}},
-            {"text": "一起划水", "attr": {"grade": -5, "health": 2}}
-        ]
-    },
-    {
-        "desc": "晚上宿舍断电断网，你选择：",
-        "options": [
-            {"text": "用流量赶作业", "attr": {"grade": 3, "money": -2}},
-            {"text": "直接睡觉", "attr": {"health": 3, "grade": -2}},
-            {"text": "和室友聊天", "attr": {"social": 3, "health": -1}}
-        ]
-    },
-    {
-        "desc": "体测800米/1000米轮到你了，你选择：",
-        "options": [
-            {"text": "全力跑完", "attr": {"health": -3, "social": 3}},
-            {"text": "慢慢慢跑", "attr": {"health": 1, "grade": -2}},
-            {"text": "申请缓测", "attr": {"grade": -3, "health": 3}}
-        ]
-    },
-    {
-        "desc": "图书馆占座被别人坐了，你选择：",
-        "options": [
-            {"text": "礼貌沟通换座", "attr": {"social": 3, "grade": 2}},
-            {"text": "直接换位置", "attr": {"grade": 1, "health": 1}},
-            {"text": "生气理论", "attr": {"social": -5, "health": -2}}
-        ]
-    },
-    {
-        "desc": "马原课老师抽查背诵，你选择：",
-        "options": [
-            {"text": "认真背诵", "attr": {"grade": 5, "social": 1}},
-            {"text": "小声翻书", "attr": {"grade": 2, "social": -2}},
-            {"text": "说不会", "attr": {"grade": -5, "health": 1}}
-        ]
-    },
-    {
-        "desc": "外卖被偷了，你选择：",
-        "options": [
-            {"text": "联系商家重发", "attr": {"money": -3, "health": 2}},
-            {"text": "去食堂再买", "attr": {"money": -5, "health": 1}},
-            {"text": "忍了不吃", "attr": {"health": -3, "money": 2}}
-        ]
-    },
-    {
-        "desc": "室友借你钱一直没还，你选择：",
-        "options": [
-            {"text": "委婉提醒", "attr": {"social": 2, "money": 3}},
-            {"text": "直接要回", "attr": {"social": -3, "money": 5}},
-            {"text": "算了不要了", "attr": {"money": -5, "social": 1}}
-        ]
-    },
-    {
-        "desc": "上课犯困快睡着了，你选择：",
-        "options": [
-            {"text": "强撑听课", "attr": {"grade": 3, "health": -2}},
-            {"text": "趴桌睡一会", "attr": {"health": 3, "grade": -3}},
-            {"text": "玩手机提神", "attr": {"health": 1, "grade": -2}}
-        ]
-    },
-    {
-        "desc": "社团通知临时开会，你选择：",
-        "options": [
-            {"text": "准时参加", "attr": {"social": 5, "grade": -2}},
-            {"text": "请假不去", "attr": {"social": -3, "grade": 2}},
-            {"text": "迟到一会", "attr": {"social": -2, "health": 1}}
-        ]
-    },
-    {
-        "desc": "南门小吃街很想吃，你选择：",
-        "options": [
-            {"text": "买小吃", "attr": {"money": -5, "health": -1}},
-            {"text": "忍住不买", "attr": {"money": 3, "health": 1}},
-            {"text": "和朋友拼单", "attr": {"social": 3, "money": -2}}
-        ]
-    },
-    {
-        "desc": "周末同学约你出去玩，你选择：",
-        "options": [
-            {"text": "开心赴约", "attr": {"social": 5, "money": -5}},
-            {"text": "宅在宿舍", "attr": {"health": 3, "social": -2}},
-            {"text": "留在图书馆", "attr": {"grade": 5, "social": -3}}
-        ]
-    },
-    {
-        "desc": "洗衣服时发现没带洗衣液，你选择：",
-        "options": [
-            {"text": "借室友的", "attr": {"social": 2, "money": 1}},
-            {"text": "下楼购买", "attr": {"money": -3, "health": -1}},
-            {"text": "清水随便洗洗", "attr": {"health": 1, "social": -1}}
-        ]
-    },
-    {
-        "desc": "上课手机突然响了，你选择：",
-        "options": [
-            {"text": "立刻静音道歉", "attr": {"social": 1, "grade": -1}},
-            {"text": "假装没听见", "attr": {"social": -3, "grade": -2}},
-            {"text": "接电话小声说", "attr": {"grade": -5, "social": -2}}
-        ]
-    },
-    {
-        "desc": "快递站很远还下雨，你选择：",
-        "options": [
-            {"text": "冒雨去取", "attr": {"health": -3, "money": 2}},
-            {"text": "改天再取", "attr": {"health": 2, "money": 1}},
-            {"text": "找代取", "attr": {"money": -2, "health": 3}}
-        ]
-    },
-    {
-        "desc": "作业快截止还没写，你选择：",
-        "options": [
-            {"text": "熬夜赶完", "attr": {"grade": 5, "health": -3}},
-            {"text": "抄同学的", "attr": {"grade": -5, "health": 1}},
-            {"text": "申请延期", "attr": {"grade": -2, "health": 2}}
-        ]
-    },
-    {
-        "desc": "路上碰到不熟的同学打招呼，你选择：",
-        "options": [
-            {"text": "热情回应", "attr": {"social": 3, "health": 1}},
-            {"text": "点头微笑", "attr": {"social": 1, "health": 1}},
-            {"text": "假装没看见", "attr": {"social": -3, "health": 1}}
-        ]
-    },
-    {
-        "desc": "宿舍卫生检查，你选择：",
-        "options": [
-            {"text": "认真打扫", "attr": {"social": 3, "health": -2}},
-            {"text": "随便收拾", "attr": {"social": -2, "health": 1}},
-            {"text": "让室友帮忙", "attr": {"social": -1, "health": 2}}
-        ]
-    },
-    {
-        "desc": "体育课自由活动，你选择：",
-        "options": [
-            {"text": "积极运动", "attr": {"health": 3, "social": 2}},
-            {"text": "坐一旁休息", "attr": {"health": 1, "social": -1}},
-            {"text": "和同学聊天", "attr": {"social": 3, "health": 1}}
-        ]
-    },
-    {
-        "desc": "想买的东西有点贵，你选择：",
-        "options": [
-            {"text": "直接购买", "attr": {"money": -5, "health": 2}},
-            {"text": "等打折再买", "attr": {"money": 2, "health": 1}},
-            {"text": "放弃不买", "attr": {"money": 3, "health": 1}}
-        ]
-    },
-    {
-        "desc": "老师布置额外作业，你选择：",
-        "options": [
-            {"text": "认真完成", "attr": {"grade": 5, "health": -2}},
-            {"text": "简单应付", "attr": {"grade": -2, "health": 2}},
-            {"text": "不做不交", "attr": {"grade": -5, "health": 3}}
-        ]
-    },
-    {
-        "desc": "朋友约你开黑打游戏，你选择：",
-        "options": [
-            {"text": "一起开黑", "attr": {"social": 5, "grade": -3}},
-            {"text": "玩一局就停", "attr": {"social": 2, "grade": -1}},
-            {"text": "拒绝学习", "attr": {"grade": 5, "social": -2}}
-        ]
-    },
-    {
-        "desc": "早八起不来，闹钟响了好几次，你选择：",
-        "options": [
-            {"text": "立刻起床", "attr": {"grade": 3, "health": -2}},
-            {"text": "再睡十分钟", "attr": {"health": 2, "grade": -2}},
-            {"text": "直接睡过头", "attr": {"grade": -5, "health": 3}}
-        ]
-    },
-    {
-        "desc": "食堂菜里有异物，你选择：",
-        "options": [
-            {"text": "找工作人员反馈", "attr": {"money": 3, "social": 1}},
-            {"text": "不吃算了", "attr": {"health": -2, "money": -1}},
-            {"text": "换一份新的", "attr": {"health": 2, "money": -1}}
-        ]
-    },
-    {
-        "desc": "复习周室友熬夜背书很吵，你选择：",
-        "options": [
-            {"text": "友好提醒", "attr": {"social": 2, "health": 2}},
-            {"text": "戴耳机睡觉", "attr": {"health": -1, "social": 1}},
-            {"text": "也跟着熬夜复习", "attr": {"grade": 3, "health": -3}}
-        ]
-    },
-    {
-        "desc": "路上捡到校园卡，你选择：",
-        "options": [
-            {"text": "交到失物招领", "attr": {"social": 5, "grade": 1}},
-            {"text": "等失主联系", "attr": {"social": 3, "health": 1}},
-            {"text": "假装没看见", "attr": {"social": -3, "health": 1}}
-        ]
-    },
-    {
-        "desc": "选修课老师点名，你不在场，你选择：",
-        "options": [
-            {"text": "让同学帮忙答到", "attr": {"grade": 2, "social": -1}},
-            {"text": "联系老师说明", "attr": {"grade": -2, "social": 2}},
-            {"text": "不管不问", "attr": {"grade": -5, "health": 1}}
-        ]
-    },
-    {
-        "desc": "想买奶茶又怕胖，你选择：",
-        "options": [
-            {"text": "点少糖少冰", "attr": {"money": -3, "health": -1}},
-            {"text": "直接全款拿下", "attr": {"money": -5, "health": -2}},
-            {"text": "忍住不喝", "attr": {"money": 3, "health": 2}}
-        ]
-    },
-    {
-        "desc": "班级投票评优，你选择：",
-        "options": [
-            {"text": "投靠谱同学", "attr": {"social": 2, "grade": 1}},
-            {"text": "投好朋友", "attr": {"social": 3, "grade": -1}},
-            {"text": "弃权不投", "attr": {"social": -2, "health": 1}}
-        ]
-    }
-];
-// 2.0新增：随机事件触发函数
-function triggerRandomEvent() {
-  // 30%概率触发随机事件
-  if (Math.random() < 0.3) {
-    const randomIndex = Math.floor(Math.random() * events.length);
-    const event = events[randomIndex];
-    // 弹出事件弹窗（复用1.0的弹窗逻辑）
-    showDialog(event.desc, event.options.map(opt => {
-      return () => {
-        changeAttr('grade', opt.attr.grade || 0);
-        changeAttr('social', opt.attr.social || 0);
-        changeAttr('health', opt.attr.health || 0);
-        changeAttr('money', opt.attr.money || 0);
-        week++; // 周数+1
-        updateUI(); // 更新属性UI
-      };
-    }));
-    return true; // 触发了事件
-  }
-  return false; // 未触发事件，显示正常场景
-};
-
-// 每周开始时
-function startWeek() {
-  if (!triggerRandomEvent()) {
-    // 没触发事件，显示正常场景选择
-    showScenes();
-  }
-}
-
-    // ———— 结局系统 ————
-    function checkEnding() {
-        if (gameData.week < 17) return false;
-
-        let gpa = gameData.stats.gpa;
-        let social = gameData.stats.social;
-        let money = gameData.stats.money;
-        let health = gameData.stats.health;
-
-        let title, desc;
-
-        if (gpa > 80) {
-            title = "🎉 保研预备役";
-            desc = "大一就打下了坚实基础，保研稳了！";
-        } else if (social > 80) {
-            title = "🌟 社团风云人物";
-            desc = "人脉拉满，校园里无人不识！";
-        } else if (money > 80) {
-            title = "💸 兼职小老板";
-            desc = "经济独立，大学生活自由又滋润！";
-        } else if (gpa < 20) {
-            title = "⚠️ 留级警告";
-            desc = "学业严重亮起红灯，再不努力就要留级了！";
-        } else if (health < 10) {
-            title = "🤒 体测危机";
-            desc = "身体被掏空，体测根本过不了！";
-        } else {
-            title = "📚 平凡大学生";
-            desc = "平平淡淡才是真，平安度过大一。";
+            saveGame();
+            dom.endingModal.classList.add('hidden');
+            updateUI();
+            checkRandomEvent();
         }
 
-        endingTitle.textContent = title;
-        endingDesc.textContent = desc;
-        endingStats.innerHTML = `
-            绩点：${gpa}<br>
-            社交：${social}<br>
-            健康：${health}<br>
-            金钱：${money}
-        `;
-        endingModal.style.display = 'flex';
-        return true;
-    }
+        // ========== 初始化 ==========
+        function initGame() {
+            // 加载保存的游戏数据
+            loadGame();
+            
+            // 更新UI
+            updateUI();
+            
+            // 检查结局
+            if (!checkEnding()) {
+                // 触发随机事件
+                checkRandomEvent();
+            }
 
-    function resetGame() {
-        gameData = { week: 1, stats: { gpa:50, social:50, health:50, money:50 } };
-        saveGame();
-        endingModal.style.display = 'none';
-        updateUI();
-        checkRandomEvent();
-    }
+            // 绑定场景按钮事件
+            document.querySelectorAll('.scene-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openSceneModal(btn.dataset.scene);
+                });
+            });
 
-    restartBtn.onclick = resetGame;
+            // 绑定重启按钮事件
+            dom.restartBtn.addEventListener('click', resetGame);
 
-    document.querySelectorAll('.scene-btn').forEach(b => {
-        b.onclick = () => openSceneModal(b.dataset.scene);
-    });
+            // 绑定弹窗点击关闭事件
+            dom.sceneModal.addEventListener('click', (e) => {
+                if (e.target === dom.sceneModal) {
+                    dom.sceneModal.classList.add('hidden');
+                }
+            });
+        }
 
-    sceneModal.onclick = e => {
-        if (e.target === sceneModal) sceneModal.classList.add('hidden');
-    };
-
-    initGame();
-</script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>大学生活模拟器</title>
-  <!-- 引用UI样式文件（关键！路径要和文件实际位置一致） -->
-  <link rel="stylesheet" href="ui-style.css">
-</head>
-<body>
-  <!-- 页面内容：第X周、场景按钮、进度条 -->
-  <h1>第1周</h1>
-  
-  <!-- 场景按钮 -->
-  <button class="scene-btn">
-    <img src="https://img.icons8.com/ios-filled/200/1E50B3/bedroom.png" alt="宿舍" class="scene-icon">
-    <span>宿舍</span>
-  </button>
-  <button class="scene-btn">
-    <img src="https://img.icons8.com/ios-filled/200/1E50B3/library.png" alt="图书馆" class="scene-icon">
-    <span>图书馆</span>
-  </button>
-  <!-- 其他4个场景按钮... -->
-
-  <!-- 属性进度条 -->
-  <div class="progress-container">
-    <div class="progress-label">学习值</div>
-    <div class="progress-bar">
-      <div id="study-progress" class="progress-fill" style="width: 50%;"></div>
-    </div>
-  </div>
-  <!-- 其他3个进度条... -->
-
-  <!-- 引用UI交互JS（可选，放在body末尾） -->
-  <script src="ui-utils.js"></script>
-  <!-- 你的业务逻辑JS（比如游戏规则、周数更新等，单独放） -->
-  <script src="game-logic.js"></script>
+        // 页面加载完成后初始化游戏
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
 </body>
 </html>

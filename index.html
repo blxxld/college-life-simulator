@@ -631,49 +631,81 @@
         }
 
         /**
-         * 检查游戏结局
-         * @returns {boolean} - 是否到达结局
-         */
-        function checkEnding() {
-            if (gameData.week <= GAME_CONFIG.MAX_WEEK) return false;
+ * 检查游戏结局
+ * @returns {boolean} - 是否到达结局
+ */
+function checkEnding() {
+    if (gameData.week <= GAME_CONFIG.MAX_WEEK) return false;
 
-            const { gpa, social, money, health } = gameData.stats;
-            let title, desc;
+    const { gpa, social, money, health } = gameData.stats;
+    let title, desc;
 
-            if (gpa > 80) {
-                title = "🎉 保研预备役";
-                desc = "大一就打下了坚实基础，保研稳了！";
-            } else if (social > 80) {
-                title = "🌟 社团风云人物";
-                desc = "人脉拉满，校园里无人不识！";
-            } else if (money > 80) {
-                title = "💸 兼职小老板";
-                desc = "经济独立，大学生活自由又滋润！";
-            } else if (gpa < 20) {
-                title = "⚠️ 留级警告";
-                desc = "学业严重亮起红灯，再不努力就要留级了！";
-            } else if (health < 10) {
-                title = "🤒 体测危机";
-                desc = "身体被掏空，体测根本过不了！";
-            } else {
-                title = "📚 平凡大学生";
-                desc = "平平淡淡才是真，平安度过大一。";
-            }
+    // ===== 新增：计算综合评分，优先触发高权重结局 =====
+    const totalScore = gpa + social + money + health;
+    
+    // 1. 学霸天花板（绩点+总分双高）
+    if (gpa >= 90 && totalScore >= 300) {
+        title = "🏆 专业第一·保研稳了";
+        desc = "大一绩点断层领先，专业课老师抢着要你进课题组，保研名额直接锁定！";
+    }
+    // 2. 社交大佬（社交+总分双高）
+    else if (social >= 90 && totalScore >= 280) {
+        title = "🌟 校园风云人物";
+        desc = "学生会主席、社团团长、班级核心，校园活动处处有你的身影，人脉直接拉满！";
+    }
+    // 3. 创业小老板（金钱+总分双高）
+    else if (money >= 90 && totalScore >= 250) {
+        title = "💸 经济独立·创业初成";
+        desc = "大一就靠兼职/创业实现月入过万，不用伸手要生活费，还能给室友发奶茶！";
+    }
+    // 4. 运动健将（健康+总分双高）
+    else if (health >= 90 && totalScore >= 200) {
+        title = "🏃 校队主力·体测满分";
+        desc = "每天坚持锻炼，校运会拿奖拿到手软，体测轻松满分，辅导员都夸你身体素质好！";
+    }
+    // 5. 摆烂选手（全属性偏低）
+    else if (totalScore < 150) {
+        title = "😴 摆烂一整年·挂科警告";
+        desc = "上课摸鱼、宿舍躺平、考试划水，大一结束多门挂科，再不努力就要留级了！";
+    }
+    // 6. 偏科选手（单属性极高，其他极低）
+    else if (gpa >= 80 && social < 20) {
+        title = "📖 高冷学霸·社交绝缘体";
+        desc = "绩点全班第一，但除了图书馆哪里都不去，室友都快忘了你的长相！";
+    }
+    else if (social >= 80 && gpa < 20) {
+        title = "🎉 社交狂魔·学业摆烂";
+        desc = "每天泡在社团/聚会里，社交值拉满，但绩点低到辅导员找你谈话！";
+    }
+    // 7. 均衡普通人（大部分属性中等）
+    else {
+        title = "✨ 平凡但充实的大一";
+        desc = "没有特别突出的亮点，也没有踩坑挂科，平平淡淡走完大一，这就是最真实的大学生活～";
+    }
 
-            // 更新结局弹窗内容
-            dom.endingTitle.textContent = title;
-            dom.endingDesc.textContent = desc;
-            dom.endingStats.innerHTML = `
-                绩点：${gpa}<br>
-                社交：${social}<br>
-                健康：${health}<br>
-                金钱：${money}
-            `;
-            
-            // 显示结局弹窗
-            dom.endingModal.classList.remove('hidden');
-            return true;
-        }
+    // 更新结局弹窗内容（新增：属性评级）
+    const getRating = (value) => {
+        if (value >= 80) return "💯 优秀";
+        if (value >= 60) return "✅ 良好";
+        if (value >= 40) return "⚠️ 一般";
+        return "❌ 较差";
+    };
+
+    dom.endingTitle.textContent = title;
+    dom.endingDesc.textContent = desc;
+    dom.endingStats.innerHTML = `
+        绩点：${gpa} ${getRating(gpa)}<br>
+        社交：${social} ${getRating(social)}<br>
+        健康：${health} ${getRating(health)}<br>
+        金钱：${money} ${getRating(money)}<br>
+        <br>
+        大一综合评价：${totalScore >= 300 ? "🎉 超棒" : totalScore >= 200 ? "👍 不错" : "💪 继续努力"}
+    `;
+    
+    // 显示结局弹窗
+    dom.endingModal.classList.remove('hidden');
+    return true;
+}
 
         /**
          * 重置游戏

@@ -144,3 +144,26 @@ h1, h2, h3 {
 .progress-fill.social { background-color: #7ed321; }
 .progress-fill.health { background-color: #ff5a5f; }
 .progress-fill.money { background-color: #f5a623; }
+/* 结局弹窗优化样式 */
+.ending-stats {
+    background-color: #333;
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    margin: 20px 0;
+    text-align: left;
+    line-height: 2;
+}
+
+.ending-stats br {
+    margin: 5px 0;
+}
+
+/* 结局评价颜色区分 */
+.ending-modal .ending-title {
+    color: var(--color-accent-yellow);
+}
+
+.ending-modal .ending-desc {
+    font-size: 1.1rem;
+    color: #ddd;
+}

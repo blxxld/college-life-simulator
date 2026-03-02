@@ -635,7 +635,7 @@
  * @returns {boolean} - 是否到达结局
  */
 function checkEnding() {
-    if (gameData.week <= GAME_CONFIG.MAX_WEEK) return false;
+    if (gameData.week <=17) return false;
 
     const { gpa, social, money, health } = gameData.stats;
     let title, desc;
@@ -758,3 +758,4 @@ function checkEnding() {
     </script>
 </body>
 </html>
+

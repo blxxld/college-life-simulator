@@ -143,6 +143,10 @@
             font-size: 1.1rem;
             line-height: 1.8;
             color: #eee;
+            background-color: #333;
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            text-align: left;
         }
 
         .restart-btn {
@@ -192,27 +196,27 @@
         <!-- 场景按钮容器 -->
         <div class="scene-buttons" id="sceneButtonsContainer">
             <button class="scene-btn" data-scene="dorm">
-                <img src="https://img.icons8.com/ios-filled/200/1E50B3/bedroom.png" alt="宿舍" class="scene-icon">
+                <img src="https://picsum.photos/seed/dorm/200/200" alt="宿舍" class="scene-icon" style="background-color: #1E50B3; border-radius: 50%;">
                 宿舍
             </button>
             <button class="scene-btn" data-scene="library">
-                <img src="https://img.icons8.com/ios-filled/200/1E50B3/library.png" alt="图书馆" class="scene-icon">
+                <img src="https://picsum.photos/seed/library/200/200" alt="图书馆" class="scene-icon" style="background-color: #1E50B3; border-radius: 50%;">
                 图书馆
             </button>
             <button class="scene-btn" data-scene="canteen">
-                <img src="https://img.icons8.com/ios-filled/200/1E50B3/restaurant.png" alt="食堂" class="scene-icon">
+                <img src="https://picsum.photos/seed/canteen/200/200" alt="食堂" class="scene-icon" style="background-color: #1E50B3; border-radius: 50%;">
                 食堂
             </button>
             <button class="scene-btn" data-scene="playground">
-                <img src="https://img.icons8.com/ios-filled/200/1E50B3/sport.png" alt="操场" class="scene-icon">
+                <img src="https://picsum.photos/seed/playground/200/200" alt="操场" class="scene-icon" style="background-color: #1E50B3; border-radius: 50%;">
                 操场
-           <button class="scene-btn" data-scene="club">
+            </button>
+            <button class="scene-btn" data-scene="club">
                 <img src="https://picsum.photos/seed/club/200/200" alt="社团" class="scene-icon" style="background-color: #1E50B3; border-radius: 50%;">
                 社团
-             </button>
             </button>
             <button class="scene-btn" data-scene="parttime">
-                <img src="https://img.icons8.com/ios-filled/200/1E50B3/work.png" alt="兼职" class="scene-icon">
+                <img src="https://picsum.photos/seed/parttime/200/200" alt="兼职" class="scene-icon" style="background-color: #1E50B3; border-radius: 50%;">
                 兼职
             </button>
         </div>
@@ -280,9 +284,9 @@
     </div>
 
     <script>
-        // ========== 游戏核心数据 ==========
+        // ========== 游戏核心配置 ==========
         const GAME_CONFIG = {
-            MAX_WEEK: 16, // 大一总周数
+            MAX_WEEK: 16, // 大一上学期总周数
             STAT_MIN: 0,  // 属性最小值
             STAT_MAX: 100 // 属性最大值
         };
@@ -391,11 +395,7 @@
                     { text: "假装不在", changes: { social: -3 } },
                     { text: "贿赂舍长", changes: { social: +3, money: -20 } }
                 ]
-            }
-        ];
-
-        // 扩展随机事件（2.0新增）
-        const campusEvents = [
+            },
             {
                 desc: "早八课老师突然点名，你选择：",
                 options: [
@@ -436,14 +436,13 @@
                     {"text": "申请缓测", changes: { gpa: -3, health: 3 }}
                 ]
             }
-            // 其他事件省略（可按需添加）
         ];
 
         // 合并所有事件
-        const allEvents = [...eventLibrary, ...campusEvents.map(item => ({
-            title: item.desc,
+        const allEvents = eventLibrary.map(item => ({
+            title: item.title || item.desc,
             options: item.options
-        }))];
+        }));
 
         // ========== DOM 元素获取 ==========
         const dom = {
@@ -550,18 +549,22 @@
         }
 
         /**
-         * 进入下一周
+         * 进入下一周（核心修改：第16周直接触发结局）
          */
         function nextWeek() {
+            // 第16周操作后直接触发结局，不增加周数
+            if (gameData.week === 16) {
+                showToast(`第16周结束，大一上学期收官！`);
+                checkEnding();
+                return;
+            }
+
+            // 非16周，正常进入下一周
             gameData.week++;
             showToast(`第${gameData.week - 1}周结束`);
             
-            // 检查是否到达结局
-            const isEnd = checkEnding();
-            if (!isEnd) {
-                // 触发随机事件
-                checkRandomEvent();
-            }
+            // 触发随机事件
+            checkRandomEvent();
         }
 
         // ========== 事件处理函数 ==========
@@ -631,81 +634,86 @@
         }
 
         /**
- * 检查游戏结局
- * @returns {boolean} - 是否到达结局
- */
-function checkEnding() {
-    if (gameData.week <=17) return false;
+         * 检查游戏结局（第16周直接触发）
+         * @returns {boolean} - 是否到达结局
+         */
+        function checkEnding() {
+            // 只有第16周才触发结局
+            if (gameData.week !== 16) return false;
 
-    const { gpa, social, money, health } = gameData.stats;
-    let title, desc;
+            const { gpa, social, money, health } = gameData.stats;
+            let title, desc;
 
-    // ===== 新增：计算综合评分，优先触发高权重结局 =====
-    const totalScore = gpa + social + money + health;
-    
-    // 1. 学霸天花板（绩点+总分双高）
-    if (gpa >= 90 && totalScore >= 300) {
-        title = "🏆 专业第一·保研稳了";
-        desc = "大一绩点断层领先，专业课老师抢着要你进课题组，保研名额直接锁定！";
-    }
-    // 2. 社交大佬（社交+总分双高）
-    else if (social >= 90 && totalScore >= 280) {
-        title = "🌟 校园风云人物";
-        desc = "学生会主席、社团团长、班级核心，校园活动处处有你的身影，人脉直接拉满！";
-    }
-    // 3. 创业小老板（金钱+总分双高）
-    else if (money >= 90 && totalScore >= 250) {
-        title = "💸 经济独立·创业初成";
-        desc = "大一就靠兼职/创业实现月入过万，不用伸手要生活费，还能给室友发奶茶！";
-    }
-    // 4. 运动健将（健康+总分双高）
-    else if (health >= 90 && totalScore >= 200) {
-        title = "🏃 校队主力·体测满分";
-        desc = "每天坚持锻炼，校运会拿奖拿到手软，体测轻松满分，辅导员都夸你身体素质好！";
-    }
-    // 5. 摆烂选手（全属性偏低）
-    else if (totalScore < 150) {
-        title = "😴 摆烂一整年·挂科警告";
-        desc = "上课摸鱼、宿舍躺平、考试划水，大一结束多门挂科，再不努力就要留级了！";
-    }
-    // 6. 偏科选手（单属性极高，其他极低）
-    else if (gpa >= 80 && social < 20) {
-        title = "📖 高冷学霸·社交绝缘体";
-        desc = "绩点全班第一，但除了图书馆哪里都不去，室友都快忘了你的长相！";
-    }
-    else if (social >= 80 && gpa < 20) {
-        title = "🎉 社交狂魔·学业摆烂";
-        desc = "每天泡在社团/聚会里，社交值拉满，但绩点低到辅导员找你谈话！";
-    }
-    // 7. 均衡普通人（大部分属性中等）
-    else {
-        title = "✨ 平凡但充实的大一";
-        desc = "没有特别突出的亮点，也没有踩坑挂科，平平淡淡走完大一，这就是最真实的大学生活～";
-    }
+            // 1. 学霸天花板（绩点≥90）
+            if (gpa >= 90) {
+                title = "🏆 专业第一·保研种子选手";
+                desc = "大一上学期绩点断层领先，专业课老师主动邀请你加入科研项目，保研之路提前铺好！";
+            }
+            // 2. 社交大佬（社交≥90）
+            else if (social >= 90) {
+                title = "🌟 校园风云人物";
+                desc = "从迎新晚会到社团招新，处处有你的身影，大一就当上学生会部长，人脉覆盖整个学院！";
+            }
+            // 3. 经济独立（金钱≥90）
+            else if (money >= 90) {
+                title = "💸 兼职小老板";
+                desc = "大一上学期靠家教/兼职赚够了学费和生活费，不用伸手向家里要钱，实现经济自由！";
+            }
+            // 4. 运动健将（健康≥90）
+            else if (health >= 90) {
+                title = "🏃 体测满分·校队主力";
+                desc = "每天坚持锻炼，校运会拿下2个冠军，体测轻松满分，成为体育老师眼里的香饽饽！";
+            }
+            // 5. 挂科警告（绩点<20）
+            else if (gpa < 20) {
+                title = "⚠️ 挂科危机·寒假补课";
+                desc = "大一上学期多门课程挂科，辅导员通知你寒假参加补课，再不努力就要留级了！";
+            }
+            // 6. 健康告急（健康<10）
+            else if (health < 10) {
+                title = "🤒 健康透支·休学警告";
+                desc = "长期熬夜、不运动，体检多项指标异常，校医院建议你休学调养身体！";
+            }
+            // 7. 偏科选手（单属性极高，其他极低）
+            else if (gpa >= 80 && social < 30) {
+                title = "📖 高冷学霸·社交绝缘体";
+                desc = "绩点全班第一，但除了图书馆和教室，几乎不参加任何社交活动，室友都快忘了你的样子！";
+            }
+            else if (social >= 80 && gpa < 30) {
+                title = "🎉 社交狂魔·学业摆烂";
+                desc = "每天泡在聚会和社团里，社交值拉满，但绩点低到辅导员找你谈话，寒假要疯狂补考！";
+            }
+            // 8. 普通大学生（大部分属性中等）
+            else {
+                title = "✨ 平凡但充实的大一上";
+                desc = "没有特别突出的亮点，也没有踩坑挂科，平平淡淡走完大一上学期，寒假可以好好放松啦～";
+            }
 
-    // 更新结局弹窗内容（新增：属性评级）
-    const getRating = (value) => {
-        if (value >= 80) return "💯 优秀";
-        if (value >= 60) return "✅ 良好";
-        if (value >= 40) return "⚠️ 一般";
-        return "❌ 较差";
-    };
+            // 结局详情（属性评级）
+            const getRating = (value) => {
+                if (value >= 80) return "💯 优秀";
+                if (value >= 60) return "✅ 良好";
+                if (value >= 40) return "⚠️ 一般";
+                return "❌ 较差";
+            };
 
-    dom.endingTitle.textContent = title;
-    dom.endingDesc.textContent = desc;
-    dom.endingStats.innerHTML = `
-        绩点：${gpa} ${getRating(gpa)}<br>
-        社交：${social} ${getRating(social)}<br>
-        健康：${health} ${getRating(health)}<br>
-        金钱：${money} ${getRating(money)}<br>
-        <br>
-        大一综合评价：${totalScore >= 300 ? "🎉 超棒" : totalScore >= 200 ? "👍 不错" : "💪 继续努力"}
-    `;
-    
-    // 显示结局弹窗
-    dom.endingModal.classList.remove('hidden');
-    return true;
-}
+            // 更新结局弹窗内容
+            dom.endingTitle.textContent = title;
+            dom.endingDesc.textContent = desc;
+            dom.endingStats.innerHTML = `
+                大一上学期总结：<br><br>
+                绩点：${gpa} ${getRating(gpa)}<br>
+                社交：${social} ${getRating(social)}<br>
+                健康：${health} ${getRating(health)}<br>
+                金钱：${money} ${getRating(money)}<br>
+                <br>
+                下一阶段：开启大一下学期之旅！
+            `;
+            
+            // 显示结局弹窗
+            dom.endingModal.classList.remove('hidden');
+            return true;
+        }
 
         /**
          * 重置游戏
@@ -758,4 +766,3 @@ function checkEnding() {
     </script>
 </body>
 </html>
-

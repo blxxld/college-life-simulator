@@ -1492,13 +1492,16 @@
             });
         }
 
-        // 事件系统简写（完整版保留，因篇幅略缩，但确保函数存在）
-        function showHorrorEvent() { /* 实现略，完整版有 */ addLog('怪谈事件触发', 'log-event'); }
-        function showMerchantEvent() { addLog('神秘商人出现', 'log-event'); }
-        function showCatEvent() { addLog('遇到流浪猫', 'log-event'); }
-        function adoptCat() { gameData.hasCat = true; gameData.catHappy = 50; unlockGallery('g_cat'); addLog('收养了猫咪', 'log-reward'); }
-        function showCustomEvent(event) { addLog('自定义事件', 'log-event'); }
-        function showRandomEvent() { addLog('随机事件', 'log-event'); }
+        // 简化的事件函数（确保不报错）
+        function showHorrorEvent() { addLog('👻 你经历了一次校园怪谈', 'log-event'); }
+        function showMerchantEvent() { addLog('🧳 神秘商人出现', 'log-event'); }
+        function showCatEvent() { addLog('🐱 遇到一只流浪猫', 'log-event'); }
+        function adoptCat() { gameData.hasCat = true; gameData.catHappy = 50; unlockGallery('g_cat'); addLog('你收养了猫咪', 'log-reward'); }
+        function showCustomEvent(event) { addLog('特殊事件', 'log-event'); }
+        function showRandomEvent() { 
+            if (Math.random() > 0.5) addLog('🎉 随机事件：你捡到了10块钱', 'log-reward', updateStat('money',10)); 
+            else addLog('😴 随机事件：今天无事发生', 'log-default');
+        }
 
         function useItem(itemId) {
             const item = ITEMS_DATA[itemId];
@@ -2020,9 +2023,14 @@
             gameData.isGuideActive = false;
             gameData.hasPlayedGuide = true;
             try { localStorage.setItem('hasPlayedGuide', 'true'); } catch (e) {}
-            dom.guideOverlay.classList.remove('active');
-            dom.guideHighlight.style.display = 'none';
-            dom.guideTooltip.style.display = 'none';
+            // 强制隐藏所有引导元素（兼容微信）
+            if (dom.guideOverlay) {
+                dom.guideOverlay.classList.remove('active');
+                dom.guideOverlay.style.display = 'none';
+            }
+            if (dom.guideHighlight) dom.guideHighlight.style.display = 'none';
+            if (dom.guideTooltip) dom.guideTooltip.style.display = 'none';
+            if (dom.guideArrow) dom.guideArrow.style.display = 'none';
             showInitialStory();
             addLog('🎉 完成新手引导！开始你的大一生活吧！', 'log-story');
         }

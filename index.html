@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大学生存·大一上 | 完整版·积分排行榜</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>大学生存·大一上 | 引导重制·箭头版</title>
     <style>
         /* 核心风格：暗黑科技风 + 沉浸式叙事 (保持不变) */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', monospace; }
@@ -19,7 +19,7 @@
             overflow-x: hidden;
         }
         
-        /* 新手引导样式 */
+        /* 新手引导样式 - 箭头版 */
         .guide-overlay {
             position: fixed;
             top: 0;
@@ -33,21 +33,6 @@
         }
         .guide-overlay.active { display: block; }
         
-        .guide-highlight {
-            position: fixed;
-            z-index: 9999;
-            border: 3px solid #00ff9d;
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.5), inset 0 0 30px rgba(0, 255, 157, 0.1);
-            pointer-events: none;
-            animation: guidePulse 1.5s infinite;
-            display: none;
-        }
-        @keyframes guidePulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 157, 0.5), inset 0 0 30px rgba(0, 255, 157, 0.1); }
-            50% { box-shadow: 0 0 50px rgba(0, 255, 157, 0.8), inset 0 0 50px rgba(0, 255, 157, 0.2); }
-        }
-        
         .guide-tooltip {
             position: fixed;
             z-index: 10000;
@@ -55,7 +40,8 @@
             border: 1px solid #00ff9d;
             border-radius: 8px;
             padding: 20px;
-            max-width: 320px;
+            max-width: 300px;
+            width: max-content;
             box-shadow: 0 0 40px rgba(0, 255, 157, 0.3);
             display: none;
             pointer-events: auto !important;
@@ -88,6 +74,7 @@
             transition: all 0.3s;
             pointer-events: auto !important;
             z-index: 10001;
+            width: 100%;
         }
         .guide-tooltip-btn:hover {
             background: #00cc7a;
@@ -102,10 +89,11 @@
             pointer-events: none;
             text-shadow: 0 0 20px rgba(0, 255, 157, 0.8);
             display: none;
+            transform: translate(-50%, -50%);
         }
         @keyframes guideBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-10px); }
         }
         
         /* 剧情弹窗样式 */
@@ -769,9 +757,8 @@
     </style>
 </head>
 <body>
-    <!-- 新手引导元素 -->
+    <!-- 新手引导元素 - 箭头版 -->
     <div class="guide-overlay" id="guideOverlay"></div>
-    <div class="guide-highlight" id="guideHighlight"></div>
     <div class="guide-tooltip" id="guideTooltip">
         <div class="guide-tooltip-title" id="guideTitle">引导标题</div>
         <div class="guide-tooltip-text" id="guideText">引导内容</div>
@@ -1141,7 +1128,6 @@
             itemProgress: document.getElementById('itemProgress'),
             galleryProgress: document.getElementById('galleryProgress'),
             guideOverlay: document.getElementById('guideOverlay'),
-            guideHighlight: document.getElementById('guideHighlight'),
             guideTooltip: document.getElementById('guideTooltip'),
             guideTitle: document.getElementById('guideTitle'),
             guideText: document.getElementById('guideText'),
@@ -1492,7 +1478,7 @@
             });
         }
 
-        // 简化的事件函数（确保不报错）
+        // 简化的事件函数
         function showHorrorEvent() { addLog('👻 你经历了一次校园怪谈', 'log-event'); }
         function showMerchantEvent() { addLog('🧳 神秘商人出现', 'log-event'); }
         function showCatEvent() { addLog('🐱 遇到一只流浪猫', 'log-event'); }
@@ -1984,14 +1970,14 @@
             showInitialStory();
         }
 
-        // 引导
+        // ================= 新手引导重制版 =================
         const guideSteps = [
-            { target: '#weekValue', title: '周数', text: '大一上学期共16周，把握好时间！', position: 'bottom' },
-            { target: '.action-btn[data-action="study"]', title: '行动', text: '点击按钮进行行动，提升各项能力！', position: 'top' },
-            { target: '#skillsList', title: '技能', text: '多次行动可解锁技能，获得永久加成！', position: 'left' },
-            { target: '#itemsGrid', title: '物品', text: '点击物品可直接使用，获得即时效果！', position: 'left' },
-            { target: '#relationshipGrid', title: '人际关系', text: '与同学老师的好感会影响行动效果！', position: 'left' },
-            { target: '#gambleBtn', title: '试试手气', text: '消耗金钱抽奖，运气影响稀有物品概率！', position: 'top' }
+            { target: '#weekValue', title: '周数', text: '大一上学期共16周，把握好时间！', arrowPos: 'bottom' },
+            { target: '.action-btn[data-action="study"]', title: '行动', text: '点击按钮进行行动，提升各项能力！', arrowPos: 'top' },
+            { target: '#skillsList', title: '技能', text: '多次行动可解锁技能，获得永久加成！', arrowPos: 'left' },
+            { target: '#itemsGrid', title: '物品', text: '点击物品可直接使用，获得即时效果！', arrowPos: 'left' },
+            { target: '#relationshipGrid', title: '人际关系', text: '与同学老师的好感会影响行动效果！', arrowPos: 'left' },
+            { target: '#gambleBtn', title: '试试手气', text: '消耗金钱抽奖，运气影响稀有物品概率！', arrowPos: 'top' }
         ];
         let currentGuideStep = 0;
 
@@ -2003,18 +1989,84 @@
         }
 
         function showGuideStep() {
-            if (currentGuideStep >= guideSteps.length) { endGuide(); return; }
+            if (currentGuideStep >= guideSteps.length) { 
+                endGuide(); 
+                return; 
+            }
             const step = guideSteps[currentGuideStep];
             const target = document.querySelector(step.target);
-            if (!target) { currentGuideStep++; showGuideStep(); return; }
-            const rect = target.getBoundingClientRect();
-            dom.guideHighlight.style.cssText = `width:${rect.width+20}px;height:${rect.height+20}px;left:${rect.left-10}px;top:${rect.top-10}px;display:block;`;
-            let x = rect.left;
-            let y = step.position === 'top' ? rect.top - 180 : rect.bottom + 15;
-            dom.guideTitle.textContent = step.title;
-            dom.guideText.textContent = step.text;
-            dom.guideTooltip.style.cssText = `left:${Math.max(10, Math.min(x, window.innerWidth-340))}px;top:${Math.max(10, y)}px;display:block;`;
-            dom.guideBtn.textContent = currentGuideStep === guideSteps.length - 1 ? '开始游戏！' : '下一步';
+            if (!target) { 
+                currentGuideStep++; 
+                showGuideStep(); 
+                return; 
+            }
+
+            // 确保目标在可视区域内
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // 稍微延迟等待滚动完成
+            setTimeout(() => {
+                const rect = target.getBoundingClientRect();
+                
+                // 设置箭头
+                const arrow = dom.guideArrow;
+                arrow.style.display = 'block';
+                // 根据箭头位置调整
+                let arrowX = rect.left + rect.width / 2;
+                let arrowY;
+                if (step.arrowPos === 'top') {
+                    arrowY = rect.top - 20;
+                    arrow.style.transform = 'translate(-50%, -50%) rotate(180deg)'; // 箭头向上
+                } else if (step.arrowPos === 'bottom') {
+                    arrowY = rect.bottom + 20;
+                    arrow.style.transform = 'translate(-50%, -50%)'; // 箭头向下
+                } else if (step.arrowPos === 'left') {
+                    arrowX = rect.left - 20;
+                    arrowY = rect.top + rect.height / 2;
+                    arrow.style.transform = 'translate(-50%, -50%) rotate(90deg)'; // 箭头向左
+                } else { // right
+                    arrowX = rect.right + 20;
+                    arrowY = rect.top + rect.height / 2;
+                    arrow.style.transform = 'translate(-50%, -50%) rotate(-90deg)'; // 箭头向右
+                }
+                arrow.style.left = arrowX + 'px';
+                arrow.style.top = arrowY + 'px';
+
+                // 设置提示框
+                dom.guideTitle.textContent = step.title;
+                dom.guideText.textContent = step.text;
+                dom.guideBtn.textContent = currentGuideStep === guideSteps.length - 1 ? '开始游戏！' : '下一步';
+
+                // 计算提示框位置，确保不超出屏幕
+                const tooltip = dom.guideTooltip;
+                tooltip.style.display = 'block';
+                // 先隐藏以获取尺寸
+                tooltip.style.visibility = 'hidden';
+                tooltip.style.display = 'block';
+                const tooltipRect = tooltip.getBoundingClientRect();
+                tooltip.style.visibility = 'visible';
+
+                let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+                let top = rect.bottom + 40; // 默认放在目标下方
+
+                // 根据箭头位置调整
+                if (step.arrowPos === 'top') {
+                    top = rect.top - tooltipRect.height - 40;
+                } else if (step.arrowPos === 'left') {
+                    left = rect.left - tooltipRect.width - 40;
+                    top = rect.top + rect.height / 2 - tooltipRect.height / 2;
+                } else if (step.arrowPos === 'right') {
+                    left = rect.right + 40;
+                    top = rect.top + rect.height / 2 - tooltipRect.height / 2;
+                }
+
+                // 边界检查
+                left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
+                top = Math.max(10, Math.min(top, window.innerHeight - tooltipRect.height - 10));
+
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+            }, 300); // 等待滚动
         }
 
         function handleGuideNext() {
@@ -2027,20 +2079,13 @@
             gameData.isGuideActive = false;
             gameData.hasPlayedGuide = true;
             try { localStorage.setItem('hasPlayedGuide', 'true'); } catch (e) {}
-            // 强制隐藏所有引导元素（兼容微信）
+            // 强制隐藏所有引导元素
             if (dom.guideOverlay) {
                 dom.guideOverlay.classList.remove('active');
                 dom.guideOverlay.style.display = 'none';
             }
-            if (dom.guideHighlight) {
-                dom.guideHighlight.style.display = 'none';
-            }
-            if (dom.guideTooltip) {
-                dom.guideTooltip.style.display = 'none';
-            }
-            if (dom.guideArrow) {
-                dom.guideArrow.style.display = 'none';
-            }
+            if (dom.guideTooltip) dom.guideTooltip.style.display = 'none';
+            if (dom.guideArrow) dom.guideArrow.style.display = 'none';
             showInitialStory();
             addLog('🎉 完成新手引导！开始你的大一生活吧！', 'log-story');
         }

@@ -1499,8 +1499,12 @@
         function adoptCat() { gameData.hasCat = true; gameData.catHappy = 50; unlockGallery('g_cat'); addLog('你收养了猫咪', 'log-reward'); }
         function showCustomEvent(event) { addLog('特殊事件', 'log-event'); }
         function showRandomEvent() { 
-            if (Math.random() > 0.5) addLog('🎉 随机事件：你捡到了10块钱', 'log-reward', updateStat('money',10)); 
-            else addLog('😴 随机事件：今天无事发生', 'log-default');
+            if (Math.random() > 0.5) {
+                addLog('🎉 随机事件：你捡到了10块钱', 'log-reward');
+                updateStat('money',10);
+            } else {
+                addLog('😴 随机事件：今天无事发生', 'log-default');
+            }
         }
 
         function useItem(itemId) {
@@ -2028,9 +2032,15 @@
                 dom.guideOverlay.classList.remove('active');
                 dom.guideOverlay.style.display = 'none';
             }
-            if (dom.guideHighlight) dom.guideHighlight.style.display = 'none';
-            if (dom.guideTooltip) dom.guideTooltip.style.display = 'none';
-            if (dom.guideArrow) dom.guideArrow.style.display = 'none';
+            if (dom.guideHighlight) {
+                dom.guideHighlight.style.display = 'none';
+            }
+            if (dom.guideTooltip) {
+                dom.guideTooltip.style.display = 'none';
+            }
+            if (dom.guideArrow) {
+                dom.guideArrow.style.display = 'none';
+            }
             showInitialStory();
             addLog('🎉 完成新手引导！开始你的大一生活吧！', 'log-story');
         }

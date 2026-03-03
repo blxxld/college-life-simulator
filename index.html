@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大学生存 | 大一上学期模拟</title>
+    <title>大学生存·大一上 | 趣味增强版（醒目日志）</title>
     <style>
         /* 核心风格：暗黑科技风 + 沉浸式叙事 */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', monospace; }
@@ -249,7 +249,7 @@
             color: rgba(0, 255, 157, 0.6);
             max-width: 300px;
         }
-        /* 状态面板（替代原stats） */
+        /* 状态面板 */
         .status-panel {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -279,7 +279,65 @@
             font-weight: bold;
             color: #00ff9d;
         }
-        .status-value.highlight { color: #ff4757; } /* 瓶颈高亮 */
+        .status-value.highlight { color: #ff4757; }
+        
+        /* 提示区域 */
+        .hints-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .week-hint {
+            padding: 10px;
+            background: rgba(0, 20, 10, 0.8);
+            border: 1px solid #00ff9d;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #00ff9d;
+            transition: all 0.3s;
+        }
+        .week-hint.exam-week {
+            background: rgba(255, 70, 70, 0.2);
+            border-color: #ff4757;
+            color: #ff4757;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.8; background: rgba(255, 70, 70, 0.2); }
+            50% { opacity: 1; background: rgba(255, 70, 70, 0.4); }
+            100% { opacity: 0.8; background: rgba(255, 70, 70, 0.2); }
+        }
+        .advice-hint {
+            padding: 8px;
+            background: rgba(0, 30, 15, 0.6);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            border-radius: 4px;
+            font-size: 13px;
+            color: #00ff9d;
+            text-align: center;
+        }
+        .task-hint {
+            padding: 8px;
+            background: rgba(0, 40, 20, 0.6);
+            border: 1px solid #ffd166;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #ffd166;
+            text-align: center;
+        }
+        .pet-hint {
+            padding: 8px;
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #ffc107;
+            text-align: center;
+        }
+        
         /* 核心面板容器 */
         .panels-container {
             display: grid;
@@ -349,37 +407,87 @@
             cursor: not-allowed;
             transform: none;
         }
-        /* 日志面板 - 重点优化部分 */
+        /* 人际关系面板 */
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .relation-item {
+            background: rgba(0, 30, 15, 0.5);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+        }
+        .relation-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #00ff9d;
+            margin-bottom: 4px;
+        }
+        .relation-bar {
+            height: 6px;
+            background: rgba(0, 255, 157, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        .relation-fill {
+            height: 100%;
+            background: #00ff9d;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .relation-value {
+            font-size: 10px;
+            color: #00ff9d;
+        }
+        
+        /* ========== 日志面板增强（更显眼） ========== */
         .log-panel {
             height: 280px;
             overflow-y: auto;
             position: relative;
-            background: rgba(0, 10, 5, 0.8);
-            border: 1px solid rgba(0, 255, 157, 0.4);
+            background: rgba(0, 10, 5, 0.9);
+            border: 2px solid #00ff9d;              /* 加粗边框 */
+            box-shadow: 0 0 25px rgba(0, 255, 157, 0.7); /* 外发光 */
+            border-radius: 8px;
         }
         .log-panel::-webkit-scrollbar { width: 6px; }
         .log-panel::-webkit-scrollbar-track { background: rgba(0, 30, 15, 0.5); border-radius: 3px; }
-        .log-panel::-webkit-scrollbar-thumb { background: rgba(0, 255, 157, 0.6); border-radius: 3px; }
+        .log-panel::-webkit-scrollbar-thumb { background: rgba(0, 255, 157, 0.8); border-radius: 3px; }
         .log-panel::-webkit-scrollbar-thumb:hover { background: #00ff9d; }
         .log-list { list-style: none; padding: 5px 0; }
         .log-item {
-            font-size: 14px;
-            padding: 10px 15px;
+            font-size: 15px;                        /* 稍大字号 */
+            padding: 12px 15px;
             margin: 4px 0;
             border-radius: 4px;
-            border-left: 3px solid transparent;
+            border-left: 4px solid transparent;
             transition: background 0.2s;
+            font-weight: bold;                       /* 加粗 */
+            text-shadow: 0 0 5px currentColor;       /* 发光文字 */
+            animation: logAppear 0.3s ease-out;      /* 入场动画 */
         }
-        .log-item.log-default { color: #00ff9d; background: rgba(0, 30, 15, 0.3); border-left-color: #00ff9d; }
-        .log-item.log-event { color: #66ccff; background: rgba(0, 40, 60, 0.3); border-left-color: #66ccff; }
-        .log-item.log-warning { color: #ff9966; background: rgba(60, 30, 0, 0.3); border-left-color: #ff9966; }
-        .log-item.log-reward { color: #ffd166; background: rgba(60, 50, 0, 0.3); border-left-color: #ffd166; }
-        .log-item.log-story { color: #ff79c6; background: rgba(40, 0, 30, 0.3); border-left-color: #ff79c6; }
+        @keyframes logAppear {
+            0% { opacity: 0; transform: translateX(-15px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        .log-item.log-default { color: #00ff9d; background: rgba(0, 30, 15, 0.5); border-left-color: #00ff9d; }
+        .log-item.log-event { color: #66ccff; background: rgba(0, 40, 60, 0.5); border-left-color: #66ccff; }
+        .log-item.log-warning { color: #ff9966; background: rgba(60, 30, 0, 0.5); border-left-color: #ff9966; }
+        .log-item.log-reward { color: #ffd166; background: rgba(60, 50, 0, 0.5); border-left-color: #ffd166; }
+        .log-item.log-story { color: #ff79c6; background: rgba(40, 0, 30, 0.5); border-left-color: #ff79c6; }
+        .log-item.log-skill { color: #bd93f9; background: rgba(60, 0, 60, 0.5); border-left-color: #bd93f9; }
         .log-time {
             font-size: 11px;
-            color: rgba(0, 255, 157, 0.5);
-            margin-right: 8px;
+            color: rgba(0, 255, 157, 0.7);
+            margin-right: 10px;
+            font-weight: normal;
         }
+        
         /* 右侧信息区 */
         .info-area {
             display: flex;
@@ -396,13 +504,19 @@
             font-size: 13px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
         .skill-item.unlocked, .achievement-item.unlocked { color: #00ff9d; }
         .skill-item.locked, .achievement-item.locked { color: rgba(0, 255, 157, 0.4); }
         .skill-buff, .achievement-reward {
             font-size: 11px;
             color: rgba(0, 255, 157, 0.6);
+            background: rgba(0,255,157,0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
         }
+        
+        /* 物品面板 */
         .items-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -416,17 +530,32 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
         }
-        .item-card:hover {
+        .item-card:hover:not(.disabled) {
             background: rgba(0, 40, 20, 0.8);
             border-color: #00ff9d;
+            transform: translateY(-2px);
         }
         .item-card.disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
         }
-        .item-name { font-size: 12px; color: #00ff9d; margin-bottom: 5px; }
-        .item-count { font-size: 10px; color: rgba(0, 255, 157, 0.6); }
+        .item-name { font-size: 12px; color: #00ff9d; margin-bottom: 5px; font-weight: bold; }
+        .item-count { 
+            font-size: 10px; 
+            color: rgba(0, 255, 157, 0.6); 
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            background: #00ff9d;
+            color: #000;
+            padding: 1px 5px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        /* 图鉴面板 */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -439,11 +568,19 @@
             border-radius: 4px;
             text-align: center;
             font-size: 11px;
-            opacity: 0.5;
+            opacity: 0.4;
             transition: all 0.3s;
+            cursor: help;
         }
-        .gallery-item.unlocked { opacity: 1; border-color: #00ff9d; }
-        /* 浮动提示容器（固定位置） */
+        .gallery-item.unlocked { 
+            opacity: 1; 
+            border-color: #00ff9d; 
+            background: rgba(0, 40, 20, 0.8);
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
+        }
+        .gallery-item:hover { transform: scale(1.05); }
+        
+        /* 浮动提示容器 */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -468,6 +605,8 @@
         .stat-toast.stat-plus { background: #00ff9d; border: 1px solid #00cc7a; }
         .stat-toast.stat-minus { background: #ff4757; border-color: #e03545; color: white; }
         .stat-toast.stat-reward { background: #ffd166; border-color: #ffc107; }
+        .stat-toast.stat-skill { background: #bd93f9; border-color: #bd93f9; color: white; }
+        
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateX(20px); }
             to { opacity: 1; transform: translateX(0); }
@@ -476,7 +615,8 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
-        /* 结局弹窗（科技风全屏） */
+        
+        /* 结局弹窗 */
         .ending-modal {
             position: fixed;
             top: 0;
@@ -553,7 +693,7 @@
             background: #00cc7a;
             transform: translateY(-2px);
         }
-        .hidden { display: none !important; }
+        
         /* 响应式 */
         @media (max-width: 800px) {
             .panels-container { grid-template-columns: 1fr; }
@@ -583,12 +723,8 @@
                 </div>
                 <button class="story-close" id="storyClose">×</button>
             </div>
-            <div class="story-body" id="storyBody">
-                <!-- 剧情内容 -->
-            </div>
-            <div class="story-choices" id="storyChoices">
-                <!-- 选项按钮 -->
-            </div>
+            <div class="story-body" id="storyBody"></div>
+            <div class="story-choices" id="storyChoices"></div>
         </div>
     </div>
     
@@ -600,9 +736,7 @@
         <div class="ending-content">
             <div class="ending-title" id="endingTitle">结局标题</div>
             <div class="ending-stats">
-                <div class="ending-stats-grid" id="endingStatsGrid">
-                    <!-- 结局统计数据 -->
-                </div>
+                <div class="ending-stats-grid" id="endingStatsGrid"></div>
             </div>
             <div class="ending-desc" id="endingDesc">结局描述</div>
             <button class="restart-btn" id="restartBtn">重新开始</button>
@@ -611,15 +745,15 @@
     
     <!-- 顶部标题 -->
     <div class="header">
-        <div class="logo">大学生存<span>大一上</span></div>
-        <div class="disclaimer">模拟大一上学期生活，平衡学业、社交与健康</div>
+        <div class="logo">大学生存<span>大一上·趣味</span></div>
+        <div class="disclaimer">怪谈·猫咪·神秘商人</div>
     </div>
     
     <!-- 状态面板 -->
     <div class="status-panel">
         <div class="status-item">
             <div class="status-label">周数</div>
-            <div class="status-value" id="weekValue">1</div>
+            <div class="status-value" id="weekValue">1/16</div>
         </div>
         <div class="status-item">
             <div class="status-label">健康</div>
@@ -641,6 +775,14 @@
             <div class="status-label">快乐</div>
             <div class="status-value" id="happyValue">80</div>
         </div>
+    </div>
+
+    <!-- 提示区域 -->
+    <div class="hints-container">
+        <div class="week-hint" id="weekHint">普通周</div>
+        <div class="advice-hint" id="adviceHint">✨ 状态良好，继续保持！</div>
+        <div class="task-hint" id="taskHint">📋 本周任务：暂无</div>
+        <div class="pet-hint" id="petHint">🐱 没有宠物</div>
     </div>
     
     <!-- 核心面板容器 -->
@@ -664,15 +806,26 @@
                     <button class="action-btn" data-action="readBook">看书</button>
                 </div>
             </div>
+
+            <!-- 人际关系面板 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">人际关系</div>
+                    <div class="panel-progress">好感度影响事件</div>
+                </div>
+                <div class="relationship-grid" id="relationshipGrid">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
             
-            <!-- 日志面板 -->
+            <!-- 日志面板 (已增强) -->
             <div class="panel log-panel">
                 <div class="panel-header">
                     <div class="panel-title">事件日志</div>
                     <div class="panel-progress" id="logProgress">总事件: 0</div>
                 </div>
                 <ul class="log-list" id="logList">
-                    <li class="log-item log-default"><span class="log-time">第1周</span>欢迎来到大一上学期生存模拟！开始你的16周大学生活吧！</li>
+                    <li class="log-item log-default"><span class="log-time">第1周</span>欢迎来到大一上学期·趣味版！</li>
                 </ul>
             </div>
         </div>
@@ -683,12 +836,10 @@
             <div class="panel">
                 <div class="panel-header">
                     <div class="panel-title">技能</div>
-                    <div class="panel-progress">已解锁: 0/12</div>
+                    <div class="panel-progress" id="skillProgress">已解锁: 0/6</div>
                 </div>
                 <div class="skills-list" id="skillsList">
-                    <div class="skill-item locked">快速阅读 <span class="skill-buff">学习+5</span></div>
-                    <div class="skill-item locked">口才 <span class="skill-buff">社交+5</span></div>
-                    <div class="skill-item locked">健身达人 <span class="skill-buff">健康+5</span></div>
+                    <!-- 动态生成 -->
                 </div>
             </div>
             
@@ -696,114 +847,165 @@
             <div class="panel">
                 <div class="panel-header">
                     <div class="panel-title">成就</div>
-                    <div class="panel-progress">已解锁: 0/20</div>
+                    <div class="panel-progress" id="achievementProgress">已解锁: 0/13</div>
                 </div>
                 <div class="achievements-list" id="achievementsList">
-                    <div class="achievement-item locked">学霸 <span class="achievement-reward">学业≥100</span></div>
-                    <div class="achievement-item locked">社交达人 <span class="achievement-reward">社交≥100</span></div>
-                    <div class="achievement-item locked">健身狂魔 <span class="achievement-reward">健康≥100</span></div>
+                    <!-- 动态生成 -->
                 </div>
             </div>
             
             <!-- 物品面板 -->
             <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-title">物品</div>
-                    <div class="panel-progress">持有: 0/8</div>
+                    <div class="panel-title">物品 (点击使用)</div>
+                    <div class="panel-progress" id="itemProgress">持有种类: 0</div>
                 </div>
                 <div class="items-grid" id="itemsGrid">
-                    <div class="item-card disabled">
-                        <div class="item-name">咖啡</div>
-                        <div class="item-count">x0</div>
-                    </div>
-                    <div class="item-card disabled">
-                        <div class="item-name">课本</div>
-                        <div class="item-count">x0</div>
-                    </div>
+                    <!-- 动态生成 -->
                 </div>
             </div>
             
             <!-- 图鉴面板 -->
             <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-title">图鉴</div>
-                    <div class="panel-progress">解锁: 0/30</div>
+                    <div class="panel-title">大一图鉴</div>
+                    <div class="panel-progress" id="galleryProgress">解锁: 0/12</div>
                 </div>
                 <div class="gallery-grid" id="galleryGrid">
-                    <div class="gallery-item locked">剧情1</div>
-                    <div class="gallery-item locked">剧情2</div>
-                    <div class="gallery-item locked">剧情3</div>
+                    <!-- 动态生成 -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 游戏核心数据
+        // ================= 趣味增强版：游戏数据定义 =================
+        
+        // 技能定义 (保持不变，6个)
+        const SKILLS_DATA = [
+            { id: 'fastRead', name: '快速阅读', desc: '学习效率提升', condition: { type: 'action', action: 'study', count: 5 }, buff: { action: 'study', stat: 'study', value: 3 } },
+            { id: 'socialButterfly', name: '社交蝴蝶', desc: '社交能力提升', condition: { type: 'action', action: 'socialize', count: 5 }, buff: { action: 'socialize', stat: 'social', value: 3 } },
+            { id: 'ironMan', name: '钢铁之躯', desc: '锻炼效果提升', condition: { type: 'action', action: 'exercise', count: 5 }, buff: { action: 'exercise', stat: 'health', value: 3 } },
+            { id: 'moneyMaker', name: '理财新手', desc: '兼职收入提升', condition: { type: 'action', action: 'partTimeJob', count: 3 }, buff: { action: 'partTimeJob', stat: 'money', value: 50 } },
+            { id: 'nightOwl', name: '夜猫子', desc: '休息恢复提升', condition: { type: 'action', action: 'rest', count: 5 }, buff: { action: 'rest', stat: 'health', value: 3 } },
+            { id: 'gamer', name: '游戏高手', desc: '打游戏快乐提升', condition: { type: 'action', action: 'playGame', count: 5 }, buff: { action: 'playGame', stat: 'happy', value: 3 } }
+        ];
+
+        // 成就定义 (扩充至13个)
+        const ACHIEVEMENTS_DATA = [
+            { id: 'scholar', name: '奖学金种子', desc: '学业达到80', condition: { type: 'stat', stat: 'study', value: 80 }, reward: { money: 500 } },
+            { id: 'popular', name: '人气新星', desc: '社交达到80', condition: { type: 'stat', stat: 'social', value: 80 }, reward: { happy: 20 } },
+            { id: 'healthy', name: '体魄强健', desc: '健康达到90', condition: { type: 'stat', stat: 'health', value: 90 }, reward: { study: 5, social: 5 } },
+            { id: 'rich', name: '小富翁', desc: '金钱达到5000', condition: { type: 'stat', stat: 'money', value: 5000 }, reward: { happy: 15 } },
+            { id: 'happyCamper', name: '乐天派', desc: '快乐达到90', condition: { type: 'stat', stat: 'happy', value: 90 }, reward: { health: 10 } },
+            { id: 'survivor', name: '生存专家', desc: '存活16周', condition: { type: 'week', value: 16 }, reward: { money: 1000 } },
+            { id: 'midtermExcellent', name: '期中优异', desc: '第4周学业≥70', condition: { type: 'weekAndStat', week: 4, stat: 'study', value: 70 }, reward: { money: 200, happy: 10 } },
+            { id: 'finalsExcellent', name: '期末学霸', desc: '第16周学业≥80', condition: { type: 'weekAndStat', week: 16, stat: 'study', value: 80 }, reward: { money: 500, happy: 20, study: 10 } },
+            { id: 'coffeeAddict', name: '咖啡因战士', desc: '使用咖啡3次', condition: { type: 'itemUse', item: 'coffee', count: 3 }, reward: { happy: 5, health: -5 } },
+            { id: 'socialMax', name: '社交名流', desc: '社交达到100', condition: { type: 'stat', stat: 'social', value: 100 }, reward: { happy: 25, money: 200 } },
+            // 新增趣味成就
+            { id: 'catLover', name: '猫奴', desc: '收养流浪猫', condition: { type: 'eventFlag', flag: 'hasCat' }, reward: { happy: 30 } },
+            { id: 'ghostHunter', name: '怪谈调查员', desc: '经历3次校园怪谈', condition: { type: 'eventCount', eventType: 'horror', count: 3 }, reward: { money: 300, study: 5 } },
+            { id: 'luckyDog', name: '幸运儿', desc: '遇到神秘商人并购买物品', condition: { type: 'eventFlag', flag: 'metMerchant' }, reward: { happy: 20, money: 100 } }
+        ];
+
+        // 物品定义 (新增猫粮、神秘符咒)
+        const ITEMS_DATA = {
+            coffee: { name: '咖啡', desc: '提神醒脑，恢复精力', effect: { health: 10, happy: 5 } },
+            textbook: { name: '学霸笔记', desc: '高分学长传承，学业+15', effect: { study: 15 } },
+            medicine: { name: '感冒药', desc: '恢复健康值', effect: { health: 30 } },
+            gameTicket: { name: '电竞门票', desc: '快乐源泉', effect: { happy: 25, study: -5 } },
+            proteinPowder: { name: '蛋白粉', desc: '健身必备', effect: { health: 15 } },
+            giftBox: { name: '精美礼物', desc: '送礼佳品', effect: { social: 15, money: -100 } },
+            energyDrink: { name: '能量饮料', desc: '瞬间恢复活力', effect: { health: 20, happy: 10 } },
+            snack: { name: '零食大礼包', desc: '快乐+15，健康-5', effect: { happy: 15, health: -5 } },
+            // 新增
+            catFood: { name: '猫粮', desc: '喂给流浪猫，它会跟你回家', effect: { happy: 5 }, special: 'cat' },
+            mysteriousCharm: { name: '神秘符咒', desc: '散发着诡异的气息，也许能辟邪', effect: { happy: -5 }, special: 'charm' }
+        };
+
+        // 图鉴定义 (扩充至12个)
+        const GALLERY_DATA = [
+            { id: 'g_start', name: '初入校园', desc: '开始大一生活' },
+            { id: 'g_club', name: '社团达人', desc: '加入社团' },
+            { id: 'g_scholar', name: '学业有成', desc: '获得学业成就' },
+            { id: 'g_rich', name: '勤工俭学', desc: '获得小富翁成就' },
+            { id: 'g_perfect', name: '完美开局', desc: '达成完美结局' },
+            { id: 'g_survive', name: '顺利结课', desc: '完成一学期' },
+            { id: 'g_exam', name: '考场风云', desc: '经历考试周' },
+            { id: 'g_addict', name: '咖啡依赖', desc: '解锁咖啡因战士' },
+            { id: 'g_midterm', name: '期中高手', desc: '期中优异成就' },
+            // 新增图鉴
+            { id: 'g_cat', name: '猫咪室友', desc: '收养了流浪猫' },
+            { id: 'g_horror1', name: '图书馆幽灵', desc: '经历怪谈：图书馆的脚步声' },
+            { id: 'g_horror2', name: '深夜自习室', desc: '经历怪谈：深夜自习室' }
+        ];
+
+        // 人际关系数据
+        const RELATIONS_DATA = [
+            { id: 'classmate', name: '👥 学霸同桌', desc: '影响学习效率', init: 20 },
+            { id: 'clubber', name: '🎭 社团达人', desc: '影响社交效果', init: 20 },
+            { id: 'counselor', name: '👨‍🏫 辅导员', desc: '影响健康恢复', init: 20 }
+        ];
+
+        // 周常任务池
+        const TASK_POOL = [
+            { type: 'action', action: 'study', target: 3, desc: '学习3次', reward: { study: 5, happy: 3 } },
+            { type: 'action', action: 'socialize', target: 3, desc: '社交3次', reward: { social: 5, happy: 3 } },
+            { type: 'action', action: 'exercise', target: 2, desc: '锻炼2次', reward: { health: 5, happy: 2 } },
+            { type: 'action', action: 'partTimeJob', target: 2, desc: '兼职2次', reward: { money: 150, happy: 2 } },
+            { type: 'action', action: 'rest', target: 2, desc: '休息2次', reward: { health: 5, happy: 5 } },
+            { type: 'stat', stat: 'study', target: 30, desc: '学业达到30', reward: { study: 3, money: 50 } }
+        ];
+
+        // 游戏核心状态
         const gameData = {
             week: 1,
-            maxWeeks: 16, // 改为16周
+            maxWeeks: 16,
             actionsLeft: 7,
-            stats: {
-                health: 100,
-                study: 0,
-                social: 0,
-                money: 2000,
-                happy: 80
+            stats: { health: 100, study: 0, social: 0, money: 2000, happy: 80 },
+            
+            actionCounts: {},
+            unlockedSkills: [],
+            unlockedAchievements: [],
+            inventory: { coffee: 1, medicine: 1, energyDrink: 1, catFood: 0, mysteriousCharm: 0 },
+            unlockedGallery: [],
+            
+            itemUseCount: {}, 
+            
+            // 人际关系
+            relations: {
+                classmate: 20,
+                clubber: 20,
+                counselor: 20
             },
-            skills: [],
-            achievements: [],
-            items: {},
-            gallery: [],
+            // 周常任务
+            currentTask: null,
+            taskProgress: 0,
+            taskCompleted: false,
+            
+            // 新增趣味状态
+            hasCat: false,           // 是否收养了猫
+            catHappy: 0,             // 猫咪快乐度（影响主人）
+            horrorEventCount: 0,      // 经历怪谈次数
+            metMerchant: false,       // 是否遇到过神秘商人
+            
+            // 事件标志（用于成就）
+            eventFlags: {},
+            
             hasPlayedGuide: false,
             isGuideActive: false
         };
-        
-        // 尝试读取localStorage
+
+        // ================= 初始化 =================
         try {
             gameData.hasPlayedGuide = localStorage.getItem('hasPlayedGuide') === 'true';
-        } catch (e) {
-            console.log('localStorage不可用，使用默认值');
-        }
+        } catch (e) {}
 
-        // 新手引导步骤
-        const guideSteps = [
-            {
-                target: '#weekValue',
-                title: '周数面板',
-                text: '这里显示当前的周数，你需要在16周内完成大一上学期的挑战！',
-                position: 'bottom'
-            },
-            {
-                target: '#healthValue',
-                title: '状态面板',
-                text: '这是你的核心状态：健康、学业、社交、金钱和快乐，需要保持平衡！',
-                position: 'bottom'
-            },
-            {
-                target: '.action-btn[data-action="study"]',
-                title: '行动按钮',
-                text: '点击这些按钮进行每日行动，每个行动会消耗一次机会并影响你的状态！',
-                position: 'top'
-            },
-            {
-                target: '#logList',
-                title: '事件日志',
-                text: '这里会记录你所有的行动和事件，随时查看你的成长轨迹！',
-                position: 'top'
-            },
-            {
-                target: '#skillsList',
-                title: '技能系统',
-                text: '完成特定行动可以解锁技能，技能会给你带来永久加成！',
-                position: 'left'
-            }
-        ];
-        let currentGuideStep = 0;
+        const EXAM_WEEKS = [4, 8, 12, 16];
 
         // DOM元素
         const dom = {
-            // 状态面板
             weekValue: document.getElementById('weekValue'),
             healthValue: document.getElementById('healthValue'),
             studyValue: document.getElementById('studyValue'),
@@ -811,18 +1013,16 @@
             moneyValue: document.getElementById('moneyValue'),
             happyValue: document.getElementById('happyValue'),
             actionProgress: document.getElementById('actionProgress'),
-            
-            // 日志
             logList: document.getElementById('logList'),
             logProgress: document.getElementById('logProgress'),
-            
-            // 面板
             skillsList: document.getElementById('skillsList'),
             achievementsList: document.getElementById('achievementsList'),
             itemsGrid: document.getElementById('itemsGrid'),
             galleryGrid: document.getElementById('galleryGrid'),
-            
-            // 新手引导
+            skillProgress: document.getElementById('skillProgress'),
+            achievementProgress: document.getElementById('achievementProgress'),
+            itemProgress: document.getElementById('itemProgress'),
+            galleryProgress: document.getElementById('galleryProgress'),
             guideOverlay: document.getElementById('guideOverlay'),
             guideHighlight: document.getElementById('guideHighlight'),
             guideTooltip: document.getElementById('guideTooltip'),
@@ -830,367 +1030,352 @@
             guideText: document.getElementById('guideText'),
             guideBtn: document.getElementById('guideBtn'),
             guideArrow: document.getElementById('guideArrow'),
-            
-            // 剧情弹窗
             storyModal: document.getElementById('storyModal'),
             storyChapter: document.getElementById('storyChapter'),
             storyTitle: document.getElementById('storyTitle'),
             storyBody: document.getElementById('storyBody'),
             storyChoices: document.getElementById('storyChoices'),
             storyClose: document.getElementById('storyClose'),
-            
-            // 结局弹窗
             endingModal: document.getElementById('endingModal'),
             endingTitle: document.getElementById('endingTitle'),
             endingStatsGrid: document.getElementById('endingStatsGrid'),
             endingDesc: document.getElementById('endingDesc'),
             restartBtn: document.getElementById('restartBtn'),
-            
-            // 浮动提示
             toastContainer: document.getElementById('toastContainer'),
-            
-            // 行动按钮
-            actionsPanel: document.getElementById('actionsPanel')
+            actionsPanel: document.getElementById('actionsPanel'),
+            weekHint: document.getElementById('weekHint'),
+            adviceHint: document.getElementById('adviceHint'),
+            taskHint: document.getElementById('taskHint'),
+            petHint: document.getElementById('petHint'),
+            relationshipGrid: document.getElementById('relationshipGrid')
         };
 
-        // 初始化游戏
         function initGame() {
+            unlockGallery('g_start');
+            generateNewTask();
             updateUI();
+            renderAllPanels();
             bindEvents();
             
-            // 如果没玩过引导，启动新手引导
             if (!gameData.hasPlayedGuide) {
-                setTimeout(() => {
-                    startGuide();
-                }, 500);
+                setTimeout(() => startGuide(), 500);
             } else {
-                // 显示初始剧情
                 showInitialStory();
             }
         }
 
-        // 更新UI
-        function updateUI() {
-            // 更新状态面板
-            dom.weekValue.textContent = gameData.week;
-            dom.healthValue.textContent = gameData.stats.health;
-            dom.studyValue.textContent = gameData.stats.study;
-            dom.socialValue.textContent = gameData.stats.social;
-            dom.moneyValue.textContent = gameData.stats.money;
-            dom.happyValue.textContent = gameData.stats.happy;
-            
-            // 更新行动次数
-            dom.actionProgress.textContent = `本周剩余行动: ${gameData.actionsLeft}`;
-            
-            // 高亮低数值状态
-            Object.entries(gameData.stats).forEach(([key, value]) => {
-                const el = dom[`${key}Value`];
-                if (el) {
-                    el.classList.toggle('highlight', value < 30);
-                }
-            });
-            
-            // 更新日志计数
-            const logCount = dom.logList.children.length;
-            dom.logProgress.textContent = `总事件: ${logCount}`;
+        // ================= 渲染函数 =================
+        function renderAllPanels() {
+            renderSkillsPanel();
+            renderAchievementsPanel();
+            renderItemsPanel();
+            renderGalleryPanel();
+            renderRelationshipPanel();
         }
 
-        // 绑定事件
-        function bindEvents() {
-            // 行动按钮点击
-            dom.actionsPanel.addEventListener('click', (e) => {
-                if (e.target.classList.contains('action-btn') && gameData.actionsLeft > 0) {
-                    const action = e.target.dataset.action;
-                    performAction(action);
-                }
+        function renderSkillsPanel() {
+            dom.skillsList.innerHTML = '';
+            let unlockedCount = 0;
+            SKILLS_DATA.forEach(skill => {
+                const isUnlocked = gameData.unlockedSkills.includes(skill.id);
+                if (isUnlocked) unlockedCount++;
+                const div = document.createElement('div');
+                div.className = `skill-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+                div.innerHTML = `<span>${isUnlocked ? '✓' : '🔒'} ${skill.name}</span><span class="skill-buff">${skill.desc}</span>`;
+                dom.skillsList.appendChild(div);
             });
-            
-            // 剧情弹窗关闭
-            dom.storyClose.addEventListener('click', () => {
-                dom.storyModal.classList.remove('active');
-            });
-            
-            // 重新开始游戏
-            dom.restartBtn.addEventListener('click', restartGame);
-            
-            // 新手引导按钮（备用绑定）
-            dom.guideBtn.addEventListener('click', handleGuideNext);
+            dom.skillProgress.textContent = `已解锁: ${unlockedCount}/${SKILLS_DATA.length}`;
         }
 
-        // 执行行动
-        function performAction(action) {
-            // 消耗行动次数
-            gameData.actionsLeft--;
-            
-            // 不同行动的效果
-            const actionEffects = {
-                study: {
-                    name: '学习',
-                    effects: { study: 10, happy: -5, health: -2 }
-                },
-                attendClass: {
-                    name: '上课',
-                    effects: { study: 8, happy: -3, health: -1 }
-                },
-                partTimeJob: {
-                    name: '兼职',
-                    effects: { money: 200, study: -5, happy: -5, health: -5 }
-                },
-                socialize: {
-                    name: '社交',
-                    effects: { social: 10, happy: 5, study: -3 }
-                },
-                exercise: {
-                    name: '锻炼',
-                    effects: { health: 10, happy: 5, study: -2 }
-                },
-                rest: {
-                    name: '休息',
-                    effects: { health: 8, happy: 8, study: -1 }
-                },
-                playGame: {
-                    name: '打游戏',
-                    effects: { happy: 10, health: -3, study: -8 }
-                },
-                readBook: {
-                    name: '看书',
-                    effects: { study: 7, happy: 3, health: -1 }
+        function renderAchievementsPanel() {
+            dom.achievementsList.innerHTML = '';
+            let unlockedCount = 0;
+            ACHIEVEMENTS_DATA.forEach(ach => {
+                const isUnlocked = gameData.unlockedAchievements.includes(ach.id);
+                if (isUnlocked) unlockedCount++;
+                const div = document.createElement('div');
+                div.className = `achievement-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+                div.innerHTML = `<span>${isUnlocked ? '🏆' : '🔒'} ${ach.name}</span><span class="achievement-reward">${ach.desc}</span>`;
+                dom.achievementsList.appendChild(div);
+            });
+            dom.achievementProgress.textContent = `已解锁: ${unlockedCount}/${ACHIEVEMENTS_DATA.length}`;
+        }
+
+        function renderItemsPanel() {
+            dom.itemsGrid.innerHTML = '';
+            let ownedTypes = 0;
+            Object.entries(ITEMS_DATA).forEach(([id, item]) => {
+                const count = gameData.inventory[id] || 0;
+                if (count > 0) ownedTypes++;
+                const div = document.createElement('div');
+                div.className = `item-card ${count > 0 ? '' : 'disabled'}`;
+                div.dataset.itemId = id;
+                div.innerHTML = `${count > 0 ? `<div class="item-count">x${count}</div>` : ''}<div class="item-name">${item.name}</div><div class="item-desc" style="font-size:10px; color:#888; margin-top:4px;">${count > 0 ? '点击使用' : '无'}</div>`;
+                if (count > 0) {
+                    div.addEventListener('click', () => useItem(id));
                 }
-            };
-            
-            const effect = actionEffects[action];
-            if (effect) {
-                // 应用效果
-                Object.entries(effect.effects).forEach(([stat, value]) => {
-                    gameData.stats[stat] = Math.max(0, Math.min(100, gameData.stats[stat] + value));
-                    
-                    // 显示浮动提示
-                    showToast(stat, value);
+                dom.itemsGrid.appendChild(div);
+            });
+            dom.itemProgress.textContent = `持有种类: ${ownedTypes}`;
+        }
+
+        function renderGalleryPanel() {
+            dom.galleryGrid.innerHTML = '';
+            let unlockedCount = 0;
+            GALLERY_DATA.forEach(entry => {
+                const isUnlocked = gameData.unlockedGallery.includes(entry.id);
+                if (isUnlocked) unlockedCount++;
+                const div = document.createElement('div');
+                div.className = `gallery-item ${isUnlocked ? 'unlocked' : ''}`;
+                div.textContent = isUnlocked ? entry.name : '???';
+                div.title = isUnlocked ? entry.desc : '未解锁';
+                dom.galleryGrid.appendChild(div);
+            });
+            dom.galleryProgress.textContent = `解锁: ${unlockedCount}/${GALLERY_DATA.length}`;
+        }
+
+        function renderRelationshipPanel() {
+            if (!dom.relationshipGrid) return;
+            dom.relationshipGrid.innerHTML = '';
+            RELATIONS_DATA.forEach(rel => {
+                const value = gameData.relations[rel.id] || 20;
+                const div = document.createElement('div');
+                div.className = 'relation-item';
+                div.innerHTML = `
+                    <div class="relation-name">${rel.name}</div>
+                    <div class="relation-bar">
+                        <div class="relation-fill" style="width: ${value}%;"></div>
+                    </div>
+                    <div class="relation-value">${value}/100</div>
+                `;
+                dom.relationshipGrid.appendChild(div);
+            });
+        }
+
+        // ================= 核心逻辑 =================
+        function updateStat(stat, delta) {
+            if (stat === 'money') {
+                gameData.stats[stat] = Math.max(0, gameData.stats[stat] + delta);
+            } else {
+                gameData.stats[stat] = Math.max(0, Math.min(100, gameData.stats[stat] + delta));
+            }
+        }
+
+        function addRelation(relId, delta) {
+            if (!gameData.relations[relId]) return;
+            let newVal = gameData.relations[relId] + delta;
+            newVal = Math.max(0, Math.min(100, newVal));
+            gameData.relations[relId] = newVal;
+            renderRelationshipPanel();
+        }
+
+        function applySocialBonus(action) {
+            if (action === 'socialize') {
+                const relKeys = Object.keys(gameData.relations);
+                const randomRel = relKeys[Math.floor(Math.random() * relKeys.length)];
+                addRelation(randomRel, 2);
+                addLog(`💬 你和 ${RELATIONS_DATA.find(r=>r.id===randomRel).name} 聊得很开心，好感+2`, 'log-event');
+            }
+        }
+
+        // ========== 猫咪系统 ==========
+        function updatePetHint() {
+            if (!dom.petHint) return;
+            if (gameData.hasCat) {
+                dom.petHint.textContent = `🐱 猫咪陪伴你 (快乐+${gameData.catHappy})`;
+            } else {
+                dom.petHint.textContent = '🐱 没有宠物 (或许可以收养一只流浪猫)';
+            }
+        }
+
+        function feedCat() {
+            if (!gameData.hasCat) return;
+            gameData.catHappy = Math.min(100, gameData.catHappy + 10);
+            updateStat('happy', 5);
+            addLog('你给猫咪喂了猫粮，它很开心，你也感到快乐', 'log-reward');
+            updatePetHint();
+        }
+
+        // ========== 周常任务系统 ==========
+        function generateNewTask() {
+            const pool = TASK_POOL;
+            const task = { ...pool[Math.floor(Math.random() * pool.length)] };
+            task.current = 0;
+            task.completed = false;
+            gameData.currentTask = task;
+            gameData.taskProgress = 0;
+            gameData.taskCompleted = false;
+            updateTaskHint();
+        }
+
+        function updateTaskProgress(action) {
+            if (!gameData.currentTask || gameData.taskCompleted) return;
+            const task = gameData.currentTask;
+            if (task.type === 'action' && task.action === action) {
+                task.current = (task.current || 0) + 1;
+                if (task.current >= task.target) {
+                    completeTask();
+                }
+            } else if (task.type === 'stat') {
+                if (gameData.stats[task.stat] >= task.target) {
+                    completeTask();
+                }
+            }
+            updateTaskHint();
+        }
+
+        function completeTask() {
+            if (gameData.taskCompleted) return;
+            gameData.taskCompleted = true;
+            const task = gameData.currentTask;
+            addLog(`✅ 完成本周任务：${task.desc}，获得奖励！`, 'log-reward');
+            if (task.reward) {
+                Object.entries(task.reward).forEach(([stat, val]) => {
+                    updateStat(stat, val);
+                    showToast(stat, val);
                 });
-                
-                // 记录日志
-                addLog(`进行了${effect.name}行动`, 'log-default');
-                
-                // 检查游戏结束条件
-                if (checkGameOver()) {
-                    endGame();
-                    return;
-                }
-                
-                // 检查是否本周行动用完
-                if (gameData.actionsLeft <= 0) {
-                    endWeek();
-                }
-                
-                // 更新UI
-                updateUI();
             }
-        }
-        
-        // 检查游戏结束条件
-        function checkGameOver() {
-            // 检查是否有状态值为负数（健康不能为 0）
-            if (gameData.stats.health <= 0) {
-                return true;
-            }
-            // 其他状态可以为 0，但不能为负
-            return Object.values(gameData.stats).some(value => value < 0);
+            addRelation('counselor', 3);
         }
 
-        // 结束本周
-        function endWeek() {
-            gameData.week++;
-            gameData.actionsLeft = 7;
-            
-            // 每周自动扣减
-            gameData.stats.health = Math.max(0, gameData.stats.health - 2);
-            gameData.stats.happy = Math.max(0, gameData.stats.happy - 1);
-            
-            addLog(`第${gameData.week-1}周结束，进入第${gameData.week}周`, 'log-event');
-            
-            // 检查游戏结束条件
-            if (checkGameOver()) {
-                endGame();
+        function updateTaskHint() {
+            if (!dom.taskHint) return;
+            if (!gameData.currentTask) {
+                dom.taskHint.textContent = '📋 本周任务：暂无';
                 return;
             }
-            
-            // 检查游戏结束
-            if (gameData.week > gameData.maxWeeks) {
-                endGame();
-                return;
+            const task = gameData.currentTask;
+            let progress = task.current || 0;
+            if (task.type === 'stat') {
+                progress = gameData.stats[task.stat] || 0;
             }
-            
-            // 随机事件
-            if (Math.random() > 0.5) {
-                showRandomEvent();
-            }
-            
-            updateUI();
+            const status = gameData.taskCompleted ? '✅ 已完成' : `(${progress}/${task.target})`;
+            dom.taskHint.textContent = `📋 本周任务：${task.desc} ${status}`;
         }
 
-        // 状态名称映射
-        const statNames = {
-            health: '健康',
-            study: '学业',
-            social: '社交',
-            money: '金钱',
-            happy: '快乐'
-        };
-        
-        // 显示浮动提示
-        function showToast(stat, value) {
-            const toast = document.createElement('div');
-            toast.className = `stat-toast ${value > 0 ? 'stat-plus' : 'stat-minus'}`;
-            const statName = statNames[stat] || stat;
-            toast.textContent = `${statName}: ${value > 0 ? '+' : ''}${value}`;
-            
-            dom.toastContainer.appendChild(toast);
-            
-            // 自动移除
-            setTimeout(() => {
-                toast.remove();
-            }, 1800);
-        }
-
-        // 添加日志
-        function addLog(text, type = 'log-default') {
-            const li = document.createElement('li');
-            li.className = `log-item ${type}`;
-            
-            // 使用游戏内周数作为时间
-            const time = `第${gameData.week}周`;
-            li.innerHTML = `<span class="log-time">${time}</span>${text}`;
-            
-            dom.logList.appendChild(li);
-            
-            // 滚动到底部
-            dom.logList.scrollTop = dom.logList.scrollHeight;
-        }
-
-        // 显示初始剧情 - 大一上学期版本
-        function showInitialStory() {
-            dom.storyChapter.textContent = '第一章 初入大学';
-            dom.storyTitle.textContent = '大一新生报到';
-            dom.storyBody.innerHTML = `
-                <div class="story-character">
-                    <div class="story-avatar">🎓</div>
-                    <div class="story-dialogue">
-                        <div class="story-name">辅导员</div>
-                        <div class="story-text">欢迎来到大学！你是大一新生，接下来的16周将是你大学生涯的第一个学期。你需要适应大学生活，建立学习习惯，参与社团活动，同时保持身心健康。</div>
-                    </div>
-                </div>
-                <div class="story-character">
-                    <div class="story-avatar">👨‍🎓</div>
-                    <div class="story-dialogue">
-                        <div class="story-name">学长</div>
-                        <div class="story-text">大一上学期很关键！要打好学业基础，但也别忘了体验大学生活。图书馆、社团、学生会都是不错的选择。不过要注意平衡，别挂科了！</div>
-                    </div>
-                </div>
-            `;
-            
-            // 添加选项
-            dom.storyChoices.innerHTML = `
-                <button class="story-choice" data-choice="start">开始我的大一生活</button>
-            `;
-            
-            // 绑定选项事件（使用事件委托，避免监听器累积）
-            const handleChoice = (e) => {
-                if (e.target.classList.contains('story-choice')) {
-                    dom.storyModal.classList.remove('active');
-                    addLog('开始了大一上学期的生活', 'log-story');
-                    // 移除事件监听器
-                    dom.storyChoices.removeEventListener('click', handleChoice);
-                }
-            };
-            
-            dom.storyChoices.addEventListener('click', handleChoice);
-            
-            dom.storyModal.classList.add('active');
-        }
-
-        // 显示随机事件 - 大一上学期背景
-        function showRandomEvent() {
-            const events = [
+        // ========== 新增趣味事件 ==========
+        function showHorrorEvent() {
+            const horrorEvents = [
                 {
-                    title: '社团招新',
-                    text: '校园里热闹非凡，各大社团正在进行招新活动。学生会、舞蹈社、话剧社、篮球队都在招募新人...',
+                    title: '📖 图书馆的脚步声',
+                    text: '深夜，图书馆空无一人，你却听到清晰的脚步声……',
                     choices: [
-                        { text: '加入学生会', effects: { social: 10, study: -3 } },
-                        { text: '加入学术社团', effects: { study: 8, social: 5 } },
-                        { text: '加入运动社团', effects: { health: 8, social: 5 } },
-                        { text: '先观察再说', effects: { happy: 2 } }
+                        { text: '勇敢探索', effects: { study: 5, happy: -5 }, gallery: 'g_horror1', flag: 'horror1' },
+                        { text: '赶紧离开', effects: { happy: -2 }, gallery: null }
                     ]
                 },
                 {
-                    title: '新生座谈会',
-                    text: '学院举办了新生座谈会，你可以选择参加不同的活动...',
+                    title: '🌙 深夜自习室',
+                    text: '你在自习室复习，突然所有的灯同时熄灭，只有角落的台灯还亮着……',
                     choices: [
-                        { text: '参加专业介绍会', effects: { study: 5 } },
-                        { text: '参加学长分享会', effects: { social: 5, happy: 3 } },
-                        { text: '不参加', effects: { happy: -2 } }
-                    ]
-                },
-                {
-                    title: '图书馆偶遇',
-                    text: '你在图书馆自习时遇到了一个高年级学长，他正在做项目，邀请你加入...',
-                    choices: [
-                        { text: '加入项目组', effects: { study: 10, social: 5, health: -3 } },
-                        { text: '婉拒并请教问题', effects: { study: 3, social: 2 } },
-                        { text: '委婉拒绝', effects: { happy: 1 } }
-                    ]
-                },
-                {
-                    title: '期中考试临近',
-                    text: '期中考试即将来临，同学们都在紧张复习...',
-                    choices: [
-                        { text: '全力冲刺复习', effects: { study: 15, happy: -5, health: -3 } },
-                        { text: '平衡复习与休息', effects: { study: 8, happy: 2 } },
-                        { text: '靠前突击', effects: { study: 5, happy: -3 } }
-                    ]
-                },
-                {
-                    title: '宿舍聚会',
-                    text: '室友提议今晚在宿舍开个小聚会，增进感情...',
-                    choices: [
-                        { text: '积极参加', effects: { social: 8, happy: 5, study: -2 } },
-                        { text: '简单参与一下', effects: { social: 3, happy: 2 } },
-                        { text: '去图书馆自习', effects: { study: 5, social: -2 } }
+                        { text: '继续学习', effects: { study: 8, happy: -8 }, gallery: 'g_horror2', flag: 'horror2' },
+                        { text: '收拾东西回宿舍', effects: { health: 5 }, gallery: null }
                     ]
                 }
             ];
-            
-            const randomEvent = events[Math.floor(Math.random() * events.length)];
-            
-            dom.storyChapter.textContent = `第${gameData.week}周 校园事件`;
-            dom.storyTitle.textContent = randomEvent.title;
+            const event = horrorEvents[Math.floor(Math.random() * horrorEvents.length)];
+            gameData.horrorEventCount++;
+            showCustomEvent(event);
+        }
+
+        function showMerchantEvent() {
+            const merchantEvent = {
+                title: '🧳 神秘商人',
+                text: '一个穿着古怪的人拦住你：“同学，我这里有稀罕货，要不要看看？”',
+                choices: [
+                    { text: '购买猫粮 (200元)', effects: { money: -200 }, item: 'catFood', gallery: null, flag: 'merchant' },
+                    { text: '购买神秘符咒 (150元)', effects: { money: -150 }, item: 'mysteriousCharm', gallery: null, flag: 'merchant' },
+                    { text: '不买', effects: {}, gallery: null }
+                ]
+            };
+            gameData.metMerchant = true;
+            showCustomEvent(merchantEvent);
+        }
+
+        function showCatEvent() {
+            if (gameData.hasCat) return;
+            const catEvent = {
+                title: '🐱 流浪猫',
+                text: '一只橘猫在宿舍楼下看着你，似乎在等你喂食……',
+                choices: [
+                    { text: '喂它 (如果有猫粮)', effects: { happy: 10 }, condition: { item: 'catFood' }, onSelect: () => adoptCat() },
+                    { text: '默默离开', effects: { happy: -2 }, gallery: null }
+                ]
+            };
+            if (gameData.inventory.catFood > 0) {
+                showCustomEvent(catEvent);
+            } else {
+                catEvent.choices = [
+                    { text: '没有猫粮，只能离开', effects: { happy: -2 }, gallery: null }
+                ];
+                showCustomEvent(catEvent);
+            }
+        }
+
+        function adoptCat() {
+            if (gameData.hasCat) return;
+            gameData.hasCat = true;
+            gameData.catHappy = 50;
+            unlockGallery('g_cat');
+            addLog('你收养了流浪猫！它成了你的室友', 'log-reward');
+            gameData.eventFlags.catLover = true;
+            checkAchievements();
+        }
+
+        function showCustomEvent(event) {
+            dom.storyChapter.textContent = `第${gameData.week}周 特别事件`;
+            dom.storyTitle.textContent = event.title;
             dom.storyBody.innerHTML = `
                 <div class="story-character">
-                    <div class="story-avatar">🏫</div>
+                    <div class="story-avatar">🎭</div>
                     <div class="story-dialogue">
-                        <div class="story-name">大一生活</div>
-                        <div class="story-text">${randomEvent.text}</div>
+                        <div class="story-name">校园奇闻</div>
+                        <div class="story-text">${event.text}</div>
                     </div>
                 </div>
             `;
             
-            // 添加选项
             dom.storyChoices.innerHTML = '';
-            randomEvent.choices.forEach((choice, index) => {
+            event.choices.forEach(choice => {
+                if (choice.condition && choice.condition.item) {
+                    if (!gameData.inventory[choice.condition.item]) return;
+                }
                 const btn = document.createElement('button');
                 btn.className = 'story-choice';
-                btn.dataset.index = index;
                 btn.textContent = choice.text;
                 
                 btn.addEventListener('click', () => {
-                    // 应用选项效果
-                    Object.entries(choice.effects).forEach(([stat, value]) => {
-                        gameData.stats[stat] = Math.max(0, Math.min(100, gameData.stats[stat] + value));
-                        showToast(stat, value);
-                    });
+                    if (choice.effects) {
+                        Object.entries(choice.effects).forEach(([stat, val]) => {
+                            if (gameData.stats[stat] !== undefined) {
+                                updateStat(stat, val);
+                            }
+                            showToast(stat, val);
+                        });
+                    }
+                    
+                    if (choice.item) {
+                        gameData.inventory[choice.item] = (gameData.inventory[choice.item] || 0) + 1;
+                        addLog(`获得物品：${ITEMS_DATA[choice.item].name}`, 'log-reward');
+                        renderItemsPanel();
+                    }
+                    
+                    if (choice.gallery) {
+                        unlockGallery(choice.gallery);
+                    }
+                    
+                    if (choice.flag) {
+                        gameData.eventFlags[choice.flag] = true;
+                    }
+                    
+                    if (choice.onSelect) {
+                        choice.onSelect();
+                    }
                     
                     addLog(`选择了：${choice.text}`, 'log-event');
                     dom.storyModal.classList.remove('active');
                     updateUI();
+                    checkAchievements();
                 });
                 
                 dom.storyChoices.appendChild(btn);
@@ -1199,202 +1384,627 @@
             dom.storyModal.classList.add('active');
         }
 
-        // 结束游戏 - 大一上学期结局
+        // ========== 原有事件函数，但需整合新事件 ==========
+        function showRandomEvent() {
+            const rand = Math.random();
+            if (rand < 0.1 && !gameData.hasCat) {
+                showCatEvent();
+                return;
+            } else if (rand < 0.2 && !gameData.metMerchant) {
+                showMerchantEvent();
+                return;
+            } else if (rand < 0.3) {
+                showHorrorEvent();
+                return;
+            }
+            
+            const events = [
+                {
+                    title: '社团招新',
+                    text: '各大社团正在进行招新活动...',
+                    choices: [
+                        { text: '加入学生会', effects: { social: 10, study: -3 }, item: null, gallery: 'g_club', relation: 'clubber' },
+                        { text: '加入学术社团', effects: { study: 8, social: 5 }, item: 'textbook', gallery: 'g_club', relation: 'classmate' },
+                        { text: '加入运动社团', effects: { health: 8, social: 5 }, item: 'proteinPowder', gallery: 'g_club', relation: null },
+                        { text: '不感兴趣', effects: { happy: 2 }, item: null }
+                    ]
+                },
+                {
+                    title: '意外收获',
+                    text: '你在整理宿舍时发现了一些有用的东西...',
+                    choices: [
+                        { text: '仔细翻找', effects: { happy: 5 }, item: 'coffee', gallery: null, relation: null },
+                        { text: '随便看看', effects: { happy: 2 }, item: null }
+                    ]
+                },
+                {
+                    title: '图书馆活动',
+                    text: '图书馆正在举办读书分享会...',
+                    choices: [
+                        { text: '积极参与', effects: { study: 5, social: 3 }, item: 'textbook', gallery: null, relation: 'classmate' },
+                        { text: '只是去看看', effects: { study: 2 }, item: null }
+                    ]
+                },
+                {
+                    title: '钱包丢失',
+                    text: '你不小心弄丢了钱包...',
+                    choices: [
+                        { text: '仔细寻找', effects: { money: -100, happy: -5 }, item: null, gallery: null },
+                        { text: '求助朋友', effects: { social: 5, money: -50 }, item: null, gallery: null, relation: 'clubber' }
+                    ]
+                },
+                {
+                    title: '感冒来袭',
+                    text: '你感觉身体不适，可能感冒了',
+                    choices: [
+                        { text: '去校医院', effects: { money: -50, health: 20 }, item: 'medicine', gallery: null, relation: 'counselor' },
+                        { text: '硬扛过去', effects: { health: -15, study: -5 }, item: null, gallery: null }
+                    ]
+                },
+                {
+                    title: '深夜畅谈',
+                    text: '室友邀请你熬夜聊天',
+                    choices: [
+                        { text: '加入他们', effects: { social: 12, health: -8, study: -3 }, item: 'snack', gallery: null, relation: 'clubber' },
+                        { text: '婉拒并睡觉', effects: { health: 5, happy: 2 }, item: null }
+                    ]
+                },
+                {
+                    title: '兼职机会',
+                    text: '有一份薪酬不错的临时兼职...',
+                    choices: [
+                        { text: '接受', effects: { money: 300, health: -10, study: -8 }, item: null, gallery: null },
+                        { text: '放弃', effects: { }, item: null }
+                    ]
+                }
+            ];
+            
+            const event = events[Math.floor(Math.random() * events.length)];
+            
+            dom.storyChapter.textContent = `第${gameData.week}周 校园事件`;
+            dom.storyTitle.textContent = event.title;
+            dom.storyBody.innerHTML = `
+                <div class="story-character">
+                    <div class="story-avatar">🏫</div>
+                    <div class="story-dialogue">
+                        <div class="story-name">大一生活</div>
+                        <div class="story-text">${event.text}</div>
+                    </div>
+                </div>
+            `;
+            
+            dom.storyChoices.innerHTML = '';
+            event.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'story-choice';
+                btn.textContent = choice.item ? `${choice.text} (获得物品)` : choice.text;
+                
+                btn.addEventListener('click', () => {
+                    Object.entries(choice.effects).forEach(([stat, val]) => {
+                        if (gameData.stats[stat] !== undefined) {
+                            updateStat(stat, val);
+                        }
+                        showToast(stat, val);
+                    });
+                    
+                    if (choice.item) {
+                        gameData.inventory[choice.item] = (gameData.inventory[choice.item] || 0) + 1;
+                        addLog(`获得物品：${ITEMS_DATA[choice.item].name}`, 'log-reward');
+                        renderItemsPanel();
+                    }
+                    
+                    if (choice.gallery) {
+                        unlockGallery(choice.gallery);
+                    }
+                    
+                    if (choice.relation) {
+                        addRelation(choice.relation, 5);
+                        addLog(`你和 ${RELATIONS_DATA.find(r=>r.id===choice.relation).name} 的关系更近了`, 'log-event');
+                    }
+                    
+                    addLog(`选择了：${choice.text}`, 'log-event');
+                    dom.storyModal.classList.remove('active');
+                    updateUI();
+                    checkAchievements();
+                });
+                
+                dom.storyChoices.appendChild(btn);
+            });
+            
+            dom.storyModal.classList.add('active');
+        }
+
+        // ========== 其他核心函数 ==========
+        function useItem(itemId) {
+            const item = ITEMS_DATA[itemId];
+            if (!item || !gameData.inventory[itemId]) return;
+            
+            gameData.inventory[itemId]--;
+            gameData.itemUseCount[itemId] = (gameData.itemUseCount[itemId] || 0) + 1;
+            
+            if (itemId === 'catFood' && gameData.hasCat) {
+                feedCat();
+            } else {
+                Object.entries(item.effect).forEach(([stat, val]) => {
+                    if (gameData.stats[stat] !== undefined) {
+                        updateStat(stat, val);
+                    }
+                    showToast(stat, val);
+                });
+            }
+            
+            if (itemId === 'giftBox') {
+                addRelation('counselor', 5);
+                addLog('🎁 辅导员收到礼物，好感+5', 'log-event');
+            }
+            
+            addLog(`使用了 ${item.name}`, 'log-event');
+            renderItemsPanel();
+            updateUI();
+            checkAchievements();
+        }
+
+        function applyMoodToEffects(effects) {
+            if (gameData.relations.counselor >= 70) {
+                if (effects.health) effects.health = Math.floor(effects.health * 1.1);
+            }
+            if (gameData.relations.classmate >= 70) {
+                if (effects.study) effects.study = Math.floor(effects.study * 1.1);
+            }
+            if (gameData.relations.clubber >= 70) {
+                if (effects.social) effects.social = Math.floor(effects.social * 1.1);
+            }
+            if (gameData.hasCat) {
+                gameData.catHappy = Math.min(100, gameData.catHappy + 1);
+                if (effects.happy) effects.happy += Math.floor(gameData.catHappy / 20);
+            }
+            
+            if (gameData.stats.happy < 30) {
+                if (effects.study) effects.study = Math.floor(effects.study * 0.6);
+                if (effects.social) effects.social = Math.floor(effects.social * 0.5);
+                if (effects.happy) effects.happy = Math.floor(effects.happy * 0.8);
+                addLog('😞 心情低落，行动效果下降', 'log-warning');
+            } else if (gameData.stats.happy > 80) {
+                if (effects.study) effects.study = Math.floor(effects.study * 1.2);
+                if (effects.social) effects.social = Math.floor(effects.social * 1.2);
+                addLog('😊 心情愉悦，行动效果提升', 'log-reward');
+            }
+            if (gameData.stats.health < 30) {
+                Object.keys(effects).forEach(key => {
+                    if (key !== 'money') effects[key] = Math.floor(effects[key] * 0.5);
+                });
+                addLog('🤒 身体不适，所有效果减半', 'log-warning');
+            }
+            return effects;
+        }
+
+        function checkExamWeek() {
+            if (EXAM_WEEKS.includes(gameData.week)) {
+                const studyScore = gameData.stats.study;
+                addLog(`📝 本周是考试周！你的学业成绩为 ${studyScore}`, 'log-event');
+                unlockGallery('g_exam');
+                if (studyScore >= 70) {
+                    addLog('🎉 考试成绩优异，获得奖励！', 'log-reward');
+                    updateStat('money', 200);
+                    updateStat('happy', 10);
+                    showToast('money', 200);
+                    showToast('happy', 10);
+                    addRelation('classmate', 5);
+                } else if (studyScore < 40) {
+                    addLog('😰 考试不及格，受到打击', 'log-warning');
+                    updateStat('happy', -15);
+                    updateStat('study', -5);
+                    showToast('happy', -15);
+                } else {
+                    addLog('📚 考试通过，继续努力', 'log-default');
+                }
+                if (gameData.week === 4 && studyScore >= 70) unlockGallery('g_midterm');
+            }
+        }
+
+        function checkAchievements() {
+            if (gameData.hasCat && !gameData.unlockedAchievements.includes('catLover')) {
+                const ach = ACHIEVEMENTS_DATA.find(a => a.id === 'catLover');
+                if (ach) {
+                    gameData.unlockedAchievements.push('catLover');
+                    addLog(`🏆 达成成就：${ach.name}！`, 'log-reward');
+                    if (ach.reward) {
+                        Object.entries(ach.reward).forEach(([stat, val]) => updateStat(stat, val));
+                    }
+                    unlockGallery('g_cat');
+                }
+            }
+            if (gameData.metMerchant && !gameData.unlockedAchievements.includes('luckyDog')) {
+                const ach = ACHIEVEMENTS_DATA.find(a => a.id === 'luckyDog');
+                if (ach) {
+                    gameData.unlockedAchievements.push('luckyDog');
+                    addLog(`🏆 达成成就：${ach.name}！`, 'log-reward');
+                    if (ach.reward) {
+                        Object.entries(ach.reward).forEach(([stat, val]) => updateStat(stat, val));
+                    }
+                }
+            }
+            if (gameData.horrorEventCount >= 3 && !gameData.unlockedAchievements.includes('ghostHunter')) {
+                const ach = ACHIEVEMENTS_DATA.find(a => a.id === 'ghostHunter');
+                if (ach) {
+                    gameData.unlockedAchievements.push('ghostHunter');
+                    addLog(`🏆 达成成就：${ach.name}！`, 'log-reward');
+                    if (ach.reward) {
+                        Object.entries(ach.reward).forEach(([stat, val]) => updateStat(stat, val));
+                    }
+                }
+            }
+            
+            ACHIEVEMENTS_DATA.forEach(ach => {
+                if (gameData.unlockedAchievements.includes(ach.id)) return;
+                const cond = ach.condition;
+                let unlocked = false;
+                
+                if (cond.type === 'stat' && gameData.stats[cond.stat] >= cond.value) {
+                    unlocked = true;
+                } else if (cond.type === 'week' && gameData.week >= cond.value) {
+                    unlocked = true;
+                } else if (cond.type === 'weekAndStat') {
+                    if (gameData.week >= cond.week && gameData.stats[cond.stat] >= cond.value) {
+                        unlocked = true;
+                    }
+                } else if (cond.type === 'itemUse') {
+                    if ((gameData.itemUseCount[cond.item] || 0) >= cond.count) {
+                        unlocked = true;
+                        if (cond.item === 'coffee') unlockGallery('g_addict');
+                    }
+                } else if (cond.type === 'eventFlag') {
+                    if (gameData.eventFlags[cond.flag] || (cond.flag === 'hasCat' && gameData.hasCat)) {
+                        unlocked = true;
+                    }
+                } else if (cond.type === 'eventCount') {
+                    if (gameData[cond.eventType + 'Count'] >= cond.count) {
+                        unlocked = true;
+                    }
+                }
+                
+                if (unlocked) {
+                    gameData.unlockedAchievements.push(ach.id);
+                    addLog(`🏆 达成成就：${ach.name}！`, 'log-reward');
+                    
+                    if (ach.reward) {
+                        Object.entries(ach.reward).forEach(([stat, val]) => {
+                            if (gameData.stats[stat] !== undefined) {
+                                updateStat(stat, val);
+                            }
+                            showToast(stat, val);
+                        });
+                    }
+                    
+                    if (ach.id === 'scholar') unlockGallery('g_scholar');
+                    if (ach.id === 'rich') unlockGallery('g_rich');
+                    
+                    renderAchievementsPanel();
+                    updateUI();
+                }
+            });
+        }
+
+        function performAction(action) {
+            gameData.actionsLeft--;
+            
+            checkAndUnlockSkill(action);
+            
+            const actionEffects = {
+                study: { name: '学习', base: { study: 10, happy: -5, health: -2 } },
+                attendClass: { name: '上课', base: { study: 8, happy: -3, health: -1 } },
+                partTimeJob: { name: '兼职', base: { money: 200, study: -5, happy: -5, health: -5 } },
+                socialize: { name: '社交', base: { social: 10, happy: 5, study: -3 } },
+                exercise: { name: '锻炼', base: { health: 10, happy: 5, study: -2 } },
+                rest: { name: '休息', base: { health: 8, happy: 8, study: -1 } },
+                playGame: { name: '打游戏', base: { happy: 10, health: -3, study: -8 } },
+                readBook: { name: '看书', base: { study: 7, happy: 3, health: -1 } }
+            };
+            
+            const effect = actionEffects[action];
+            if (effect) {
+                let finalEffects = { ...effect.base };
+                
+                gameData.unlockedSkills.forEach(skillId => {
+                    const skill = SKILLS_DATA.find(s => s.id === skillId);
+                    if (skill && skill.buff && skill.buff.action === action) {
+                        finalEffects[skill.buff.stat] = (finalEffects[skill.buff.stat] || 0) + skill.buff.value;
+                    }
+                });
+                
+                finalEffects = applyMoodToEffects(finalEffects);
+                
+                Object.entries(finalEffects).forEach(([stat, value]) => {
+                    if (gameData.stats[stat] !== undefined) {
+                        updateStat(stat, value);
+                    }
+                    showToast(stat, value);
+                });
+                
+                addLog(`进行了 ${effect.name} 行动`, 'log-default');
+                
+                applySocialBonus(action);
+                updateTaskProgress(action);
+                
+                if (checkGameOver()) { endGame(); return; }
+                if (gameData.actionsLeft <= 0) endWeek();
+                
+                updateUI();
+                checkAchievements();
+            }
+        }
+
+        function endWeek() {
+            checkExamWeek(); 
+            
+            gameData.week++;
+            gameData.actionsLeft = 7;
+            
+            gameData.stats.health = Math.max(0, Math.min(100, gameData.stats.health - 2));
+            gameData.stats.happy = Math.max(0, Math.min(100, gameData.stats.happy - 1));
+            
+            addRelation('classmate', Math.floor(Math.random()*3)-1);
+            addRelation('clubber', Math.floor(Math.random()*3)-1);
+            addRelation('counselor', Math.floor(Math.random()*3)-1);
+            
+            addLog(`第 ${gameData.week-1} 周结束，进入第 ${gameData.week} 周`, 'log-event');
+            
+            generateNewTask();
+            
+            if (checkGameOver()) { endGame(); return; }
+            if (gameData.week > gameData.maxWeeks) {
+                checkAchievements();
+                endGame(); 
+                return;
+            }
+            
+            if (Math.random() > 0.4) showRandomEvent();
+            
+            updateUI();
+            checkAchievements();
+        }
+
+        function checkGameOver() {
+            if (gameData.stats.health <= 0) return true;
+            return Object.values(gameData.stats).some(v => v < 0);
+        }
+
+        const statNames = { health: '健康', study: '学业', social: '社交', money: '金钱', happy: '快乐', skill: '技能' };
+        
+        function showToast(stat, value) {
+            const toast = document.createElement('div');
+            const type = stat === 'skill' ? 'stat-skill' : (value > 0 ? 'stat-plus' : 'stat-minus');
+            toast.className = `stat-toast ${type}`;
+            toast.textContent = `${statNames[stat] || stat}: ${value > 0 ? '+' : ''}${value}`;
+            dom.toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 1800);
+        }
+
+        // 增强版 addLog：自动滚动到底部，并触发动画（已通过CSS实现）
+        function addLog(text, type = 'log-default') {
+            const li = document.createElement('li');
+            li.className = `log-item ${type}`;
+            li.innerHTML = `<span class="log-time">第${gameData.week}周</span>${text}`;
+            dom.logList.appendChild(li);
+            // 自动滚动到底部
+            dom.logList.scrollTop = dom.logList.scrollHeight;
+        }
+
+        function updateWeekHint() {
+            if (!dom.weekHint) return;
+            if (EXAM_WEEKS.includes(gameData.week)) {
+                dom.weekHint.textContent = '⚠️ 本周是考试周！学业成绩将影响结果 ⚠️';
+                dom.weekHint.className = 'week-hint exam-week';
+            } else {
+                dom.weekHint.textContent = '普通周';
+                dom.weekHint.className = 'week-hint';
+            }
+        }
+
+        function updateAdvice() {
+            if (!dom.adviceHint) return;
+            const stats = gameData.stats;
+            if (stats.health < 30) {
+                dom.adviceHint.textContent = '💡 建议：健康值过低，快去休息或使用药品！';
+            } else if (stats.study < 30) {
+                dom.adviceHint.textContent = '💡 建议：学业落后，赶紧学习或上课！';
+            } else if (stats.social < 30) {
+                dom.adviceHint.textContent = '💡 建议：社交不足，参加社团或社交活动吧！';
+            } else if (stats.happy < 30) {
+                dom.adviceHint.textContent = '💡 建议：快乐值低，打游戏或休息放松一下！';
+            } else {
+                dom.adviceHint.textContent = '✨ 状态良好，继续保持！';
+            }
+        }
+
+        function showInitialStory() {
+            dom.storyChapter.textContent = '第一章 初入大学';
+            dom.storyTitle.textContent = '大一新生报到';
+            dom.storyBody.innerHTML = `
+                <div class="story-character">
+                    <div class="story-avatar">🎓</div>
+                    <div class="story-dialogue">
+                        <div class="story-name">辅导员</div>
+                        <div class="story-text">欢迎来到大学！这里充满奇遇，你可能会遇到流浪猫、校园怪谈，甚至神秘商人。祝你度过精彩的一学期！</div>
+                    </div>
+                </div>
+            `;
+            
+            dom.storyChoices.innerHTML = `<button class="story-choice">开始我的大一生活</button>`;
+            
+            const choiceBtn = document.querySelector('.story-choice');
+            if (choiceBtn) {
+                choiceBtn.addEventListener('click', function handleInitial() {
+                    dom.storyModal.classList.remove('active');
+                    addLog('开始了大一上学期的生活', 'log-story');
+                    addLog('收到开学礼包：咖啡x1，感冒药x1，能量饮料x1', 'log-reward');
+                    choiceBtn.removeEventListener('click', handleInitial);
+                });
+            }
+            
+            dom.storyModal.classList.add('active');
+        }
+
+        function unlockGallery(id) {
+            if (!gameData.unlockedGallery.includes(id)) {
+                gameData.unlockedGallery.push(id);
+                renderGalleryPanel();
+            }
+        }
+
+        function checkAndUnlockSkill(action) {
+            gameData.actionCounts[action] = (gameData.actionCounts[action] || 0) + 1;
+            SKILLS_DATA.forEach(skill => {
+                if (gameData.unlockedSkills.includes(skill.id)) return;
+                const cond = skill.condition;
+                if (cond.type === 'action' && cond.action === action) {
+                    if (gameData.actionCounts[action] >= cond.count) {
+                        gameData.unlockedSkills.push(skill.id);
+                        addLog(`🎉 解锁技能：${skill.name}！${skill.desc}`, 'log-skill');
+                        showToast('skill', `解锁：${skill.name}`);
+                        renderSkillsPanel();
+                    }
+                }
+            });
+        }
+
+        function bindEvents() {
+            dom.actionsPanel.addEventListener('click', (e) => {
+                if (e.target.classList.contains('action-btn') && gameData.actionsLeft > 0) {
+                    performAction(e.target.dataset.action);
+                }
+            });
+            dom.storyClose.addEventListener('click', () => dom.storyModal.classList.remove('active'));
+            dom.restartBtn.addEventListener('click', restartGame);
+            dom.guideBtn.addEventListener('click', handleGuideNext);
+        }
+
+        function updateUI() {
+            dom.weekValue.textContent = `${gameData.week}/${gameData.maxWeeks}`;
+            dom.healthValue.textContent = gameData.stats.health;
+            dom.studyValue.textContent = gameData.stats.study;
+            dom.socialValue.textContent = gameData.stats.social;
+            dom.moneyValue.textContent = gameData.stats.money;
+            dom.happyValue.textContent = gameData.stats.happy;
+            
+            dom.actionProgress.textContent = `本周剩余行动: ${gameData.actionsLeft}`;
+            
+            Object.entries(gameData.stats).forEach(([key, value]) => {
+                const el = dom[`${key}Value`];
+                if (el) el.classList.toggle('highlight', value < 30);
+            });
+            
+            const logCount = dom.logList.children.length;
+            dom.logProgress.textContent = `总事件: ${logCount}`;
+
+            updateWeekHint();
+            updateAdvice();
+            updateTaskHint();
+            updatePetHint();
+            renderRelationshipPanel();
+        }
+
         function endGame() {
-            // 计算结局
-            let ending = '';
+            unlockGallery('g_survive');
+            
             let endingTitle = '';
             let endingDesc = '';
-            
             const avgStat = (gameData.stats.study + gameData.stats.social + gameData.stats.health + gameData.stats.happy) / 4;
             
             if (avgStat >= 80) {
                 endingTitle = '完美开局';
-                endingDesc = '你的大一上学期表现堪称完美！学业优秀、社交广泛、身心健康，为你的大学生涯奠定了坚实的基础。老师们都对你赞不绝口，同学们也愿意与你交往。你成功地从高中生转变为优秀的大学生！';
+                endingDesc = '你的大一上学期表现堪称完美！';
+                unlockGallery('g_perfect');
             } else if (avgStat >= 60) {
                 endingTitle = '平稳过渡';
-                endingDesc = '你的大一上学期过得还算顺利。虽然有过一些小波折，但总体上适应了大学生活。学业中规中矩，也有一些朋友，算是完成了从高中到大学的过渡。下学期可以更加努力！';
+                endingDesc = '你的大一上学期过得还算顺利。';
             } else if (avgStat >= 40) {
                 endingTitle = '挣扎前行';
-                endingDesc = '你的大一上学期过得有些艰难。在学习、社交或健康方面都遇到了一些问题，大学生活让你感到有些不适应。不过别灰心，这只是开始，还有机会调整！';
+                endingDesc = '你的大一上学期过得有些艰难。';
             } else {
                 endingTitle = '迷茫开局';
-                endingDesc = '你的大一上学期过得不太理想，似乎还没有找到适合自己的大学生活节奏。学业、社交、健康都出现了问题。也许需要重新思考自己的大学生活规划，寻求帮助也不丢人。';
+                endingDesc = '你的大一上学期过得不太理想。';
             }
             
-            // 根据具体表现添加额外评价
-            if (gameData.stats.study >= 90) {
-                endingDesc += '\n\n🏆 学业成就：你是学习小能手，大一上学期就打下了扎实的学业基础！';
-            }
-            if (gameData.stats.social >= 90) {
-                endingDesc += '\n\n🎉 社交达人：你迅速融入了大学生活，结交了许多朋友！';
-            }
-            if (gameData.stats.health >= 90) {
-                endingDesc += '\n\n💪 健康之星：你保持着良好的生活习惯和健康的体魄！';
-            }
-            
-            // 更新结局弹窗
             dom.endingTitle.textContent = endingTitle;
             dom.endingDesc.textContent = endingDesc;
-            
-            // 结局统计
             dom.endingStatsGrid.innerHTML = `
-                <div class="ending-stat-item">
-                    <div class="status-label">学业</div>
-                    <div class="status-value">${gameData.stats.study}</div>
-                </div>
-                <div class="ending-stat-item">
-                    <div class="status-label">社交</div>
-                    <div class="status-value">${gameData.stats.social}</div>
-                </div>
-                <div class="ending-stat-item">
-                    <div class="status-label">健康</div>
-                    <div class="status-value">${gameData.stats.health}</div>
-                </div>
-                <div class="ending-stat-item">
-                    <div class="status-label">金钱</div>
-                    <div class="status-value">${gameData.stats.money}</div>
-                </div>
-                <div class="ending-stat-item">
-                    <div class="status-label">快乐</div>
-                    <div class="status-value">${gameData.stats.happy}</div>
-                </div>
-                <div class="ending-stat-item">
-                    <div class="status-label">综合评分</div>
-                    <div class="status-value">${Math.round(avgStat)}</div>
-                </div>
+                <div class="ending-stat-item"><div class="status-label">学业</div><div class="status-value">${gameData.stats.study}</div></div>
+                <div class="ending-stat-item"><div class="status-label">社交</div><div class="status-value">${gameData.stats.social}</div></div>
+                <div class="ending-stat-item"><div class="status-label">健康</div><div class="status-value">${gameData.stats.health}</div></div>
+                <div class="ending-stat-item"><div class="status-label">金钱</div><div class="status-value">${gameData.stats.money}</div></div>
+                <div class="ending-stat-item"><div class="status-label">快乐</div><div class="status-value">${gameData.stats.happy}</div></div>
+                <div class="ending-stat-item"><div class="status-label">综合</div><div class="status-value">${Math.round(avgStat)}</div></div>
             `;
             
-            // 显示结局弹窗
             dom.endingModal.classList.add('active');
         }
 
-        // 重新开始游戏
         function restartGame() {
-            // 重置游戏数据
             gameData.week = 1;
             gameData.actionsLeft = 7;
-            gameData.stats = {
-                health: 100,
-                study: 0,
-                social: 0,
-                money: 2000,
-                happy: 80
-            };
-            gameData.skills = [];
-            gameData.achievements = [];
-            gameData.items = {};
-            gameData.gallery = [];
+            gameData.stats = { health: 100, study: 0, social: 0, money: 2000, happy: 80 };
+            gameData.actionCounts = {};
+            gameData.unlockedSkills = [];
+            gameData.unlockedAchievements = [];
+            gameData.inventory = { coffee: 1, medicine: 1, energyDrink: 1, catFood: 0, mysteriousCharm: 0 };
+            gameData.unlockedGallery = [];
+            gameData.itemUseCount = {};
+            gameData.relations = { classmate: 20, clubber: 20, counselor: 20 };
+            gameData.currentTask = null;
+            gameData.taskProgress = 0;
+            gameData.taskCompleted = false;
+            gameData.hasCat = false;
+            gameData.catHappy = 0;
+            gameData.horrorEventCount = 0;
+            gameData.metMerchant = false;
+            gameData.eventFlags = {};
             
-            // 清空日志
-            dom.logList.innerHTML = '<li class="log-item log-default"><span class="log-time">第1周</span>欢迎来到大一上学期生存模拟！开始你的16周大学生活吧！</li>';
+            unlockGallery('g_start');
+            generateNewTask();
             
-            // 隐藏结局弹窗
+            dom.logList.innerHTML = '<li class="log-item log-default"><span class="log-time">第1周</span>欢迎回到大一上学期·趣味版！</li>';
             dom.endingModal.classList.remove('active');
             
-            // 更新UI
             updateUI();
-            
-            // 显示初始剧情
+            renderAllPanels();
             showInitialStory();
         }
 
-        // ===== 新手引导相关函数 =====
+        // 引导
+        const guideSteps = [
+            { target: '#weekValue', title: '周数', text: '大一上学期共16周，把握好时间！', position: 'bottom' },
+            { target: '.action-btn[data-action="study"]', title: '行动', text: '点击按钮进行行动，提升各项能力！', position: 'top' },
+            { target: '#skillsList', title: '技能', text: '多次行动可解锁技能，获得永久加成！', position: 'left' },
+            { target: '#itemsGrid', title: '物品', text: '点击物品可直接使用，获得即时效果！', position: 'left' },
+            { target: '#relationshipGrid', title: '人际关系', text: '与同学老师的好感会影响行动效果！', position: 'left' }
+        ];
+        let currentGuideStep = 0;
+
         function startGuide() {
             gameData.isGuideActive = true;
             currentGuideStep = 0;
-            
-            // 显示引导遮罩
             dom.guideOverlay.classList.add('active');
-            
-            // 显示第一步
             showGuideStep();
         }
 
         function showGuideStep() {
-            if (currentGuideStep >= guideSteps.length) {
-                endGuide();
-                return;
-            }
-            
+            if (currentGuideStep >= guideSteps.length) { endGuide(); return; }
             const step = guideSteps[currentGuideStep];
-            const targetEl = document.querySelector(step.target);
-            
-            if (!targetEl) {
-                currentGuideStep++;
-                showGuideStep();
-                return;
-            }
-            
-            const rect = targetEl.getBoundingClientRect();
-            
-            // 设置高亮框
-            dom.guideHighlight.style.width = rect.width + 20 + 'px';
-            dom.guideHighlight.style.height = rect.height + 20 + 'px';
-            dom.guideHighlight.style.left = rect.left - 10 + 'px';
-            dom.guideHighlight.style.top = rect.top - 10 + 'px';
-            dom.guideHighlight.style.display = 'block';
-            
-            // 设置提示框位置
-            let tooltipX, tooltipY;
-            const gap = 15;
-            
-            switch(step.position) {
-                case 'bottom':
-                    tooltipX = rect.left;
-                    tooltipY = rect.bottom + gap;
-                    dom.guideArrow.style.left = rect.left + rect.width/2 - 15 + 'px';
-                    dom.guideArrow.style.top = rect.bottom - 10 + 'px';
-                    dom.guideArrow.textContent = '⬆';
-                    break;
-                case 'top':
-                    tooltipX = rect.left;
-                    tooltipY = rect.top - 180;
-                    dom.guideArrow.style.left = rect.left + rect.width/2 - 15 + 'px';
-                    dom.guideArrow.style.top = rect.top + rect.height + 10 + 'px';
-                    dom.guideArrow.textContent = '⬇';
-                    break;
-                case 'left':
-                    tooltipX = rect.right + gap;
-                    tooltipY = rect.top;
-                    dom.guideArrow.style.left = rect.right - 10 + 'px';
-                    dom.guideArrow.style.top = rect.top + rect.height/2 - 15 + 'px';
-                    dom.guideArrow.textContent = '⬅';
-                    break;
-                case 'right':
-                    tooltipX = rect.left - 340;
-                    tooltipY = rect.top;
-                    dom.guideArrow.style.left = rect.left - 40 + 'px';
-                    dom.guideArrow.style.top = rect.top + rect.height/2 - 15 + 'px';
-                    dom.guideArrow.textContent = '➡';
-                    break;
-            }
-            
-            // 确保提示框在可视区域内
-            tooltipX = Math.max(10, Math.min(tooltipX, window.innerWidth - 340));
-            tooltipY = Math.max(10, Math.min(tooltipY, window.innerHeight - 200));
-            
-            // 设置提示框内容和位置
+            const target = document.querySelector(step.target);
+            if (!target) { currentGuideStep++; showGuideStep(); return; }
+            const rect = target.getBoundingClientRect();
+            dom.guideHighlight.style.cssText = `width:${rect.width+20}px;height:${rect.height+20}px;left:${rect.left-10}px;top:${rect.top-10}px;display:block;`;
+            let x = rect.left;
+            let y = step.position === 'top' ? rect.top - 180 : rect.bottom + 15;
             dom.guideTitle.textContent = step.title;
             dom.guideText.textContent = step.text;
-            dom.guideTooltip.style.left = tooltipX + 'px';
-            dom.guideTooltip.style.top = tooltipY + 'px';
-            dom.guideTooltip.style.display = 'block';
-            
-            // 更新按钮文字
+            dom.guideTooltip.style.cssText = `left:${Math.max(10, Math.min(x, window.innerWidth-340))}px;top:${Math.max(10, y)}px;display:block;`;
             dom.guideBtn.textContent = currentGuideStep === guideSteps.length - 1 ? '开始游戏！' : '下一步';
-            
-            // 显示箭头
-            dom.guideArrow.style.display = 'block';
-            
-            // 确保按钮可点击
-            dom.guideBtn.style.pointerEvents = 'auto';
-            dom.guideBtn.style.zIndex = '10001';
         }
 
         function handleGuideNext() {
             if (!gameData.isGuideActive) return;
-            
             currentGuideStep++;
             showGuideStep();
         }
@@ -1402,27 +2012,14 @@
         function endGuide() {
             gameData.isGuideActive = false;
             gameData.hasPlayedGuide = true;
-            
-            // 保存引导状态
-            try {
-                localStorage.setItem('hasPlayedGuide', 'true');
-            } catch (e) {
-                console.log('localStorage不可用，无法保存引导状态');
-            }
-            
-            // 隐藏引导元素
+            try { localStorage.setItem('hasPlayedGuide', 'true'); } catch (e) {}
             dom.guideOverlay.classList.remove('active');
             dom.guideHighlight.style.display = 'none';
             dom.guideTooltip.style.display = 'none';
-            dom.guideArrow.style.display = 'none';
-            
-            // 显示初始剧情
             showInitialStory();
-            
             addLog('🎉 完成新手引导！开始你的大一生活吧！', 'log-story');
         }
 
-        // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>

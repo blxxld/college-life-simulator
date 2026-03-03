@@ -1,3 +1,4 @@
+<!-- 完整代码 - 复制整个index.html文件 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,17 +8,219 @@
     <style>
         /* 核心风格：暗黑科技风 + 沉浸式叙事 */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', monospace; }
-        body { 
-            background: #0a0a0a; 
-            color: #00ff9d; 
+        body {
+            background: #0a0a0a;
+            color: #00ff9d;
             min-height: 100vh;
             padding: 20px;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
             background-size: 20px 20px;
             overflow-x: hidden;
         }
+        
+        /* ============ 新手引导样式 ============ */
+        .guide-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9998;
+            display: none;
+        }
+        .guide-overlay.active { display: block; }
+        
+        .guide-highlight {
+            position: fixed;
+            z-index: 9999;
+            border: 3px solid #00ff9d;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.5), inset 0 0 30px rgba(0, 255, 157, 0.1);
+            pointer-events: none;
+            animation: guidePulse 1.5s infinite;
+        }
+        @keyframes guidePulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 157, 0.5), inset 0 0 30px rgba(0, 255, 157, 0.1); }
+            50% { box-shadow: 0 0 50px rgba(0, 255, 157, 0.8), inset 0 0 50px rgba(0, 255, 157, 0.2); }
+        }
+        
+        .guide-tooltip {
+            position: fixed;
+            z-index: 10000;
+            background: rgba(0, 20, 10, 0.95);
+            border: 1px solid #00ff9d;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 320px;
+            box-shadow: 0 0 40px rgba(0, 255, 157, 0.3);
+        }
+        .guide-tooltip-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ff9d;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .guide-tooltip-text {
+            font-size: 14px;
+            color: rgba(0, 255, 157, 0.9);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .guide-tooltip-btn {
+            background: #00ff9d;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .guide-tooltip-btn:hover {
+            background: #00cc7a;
+            transform: translateY(-2px);
+        }
+        .guide-arrow {
+            position: fixed;
+            z-index: 9999;
+            font-size: 40px;
+            color: #00ff9d;
+            animation: guideBounce 1s infinite;
+            pointer-events: none;
+            text-shadow: 0 0 20px rgba(0, 255, 157, 0.8);
+        }
+        @keyframes guideBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* ============ 剧情弹窗样式 ============ */
+        .story-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 10, 5, 0.95);
+            z-index: 10001;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        .story-modal.active { display: flex; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .story-content {
+            max-width: 600px;
+            width: 90%;
+            background: rgba(0, 20, 10, 0.9);
+            border: 2px solid #00ff9d;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0, 255, 157, 0.2);
+        }
+        .story-header {
+            background: rgba(0, 40, 20, 0.8);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 255, 157, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .story-chapter {
+            font-size: 12px;
+            color: rgba(0, 255, 157, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .story-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff9d;
+            letter-spacing: 1px;
+        }
+        .story-body {
+            padding: 25px;
+        }
+        .story-character {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .story-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 255, 157, 0.2);
+            border: 2px solid #00ff9d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .story-dialogue {
+            flex: 1;
+        }
+        .story-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00ff9d;
+            margin-bottom: 5px;
+        }
+        .story-text {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+        }
+        .story-choices {
+            padding: 20px;
+            background: rgba(0, 10, 5, 0.5);
+            border-top: 1px solid rgba(0, 255, 157, 0.2);
+        }
+        .story-choice {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            background: rgba(0, 30, 15, 0.7);
+            border: 1px solid rgba(0, 255, 157, 0.4);
+            border-radius: 6px;
+            color: #00ff9d;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s;
+        }
+        .story-choice:hover {
+            background: rgba(0, 40, 20, 0.9);
+            border-color: #00ff9d;
+            transform: translateX(5px);
+        }
+        .story-choice:last-child { margin-bottom: 0; }
+        .story-close {
+            background: none;
+            border: none;
+            color: rgba(0, 255, 157, 0.6);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .story-close:hover { color: #00ff9d; }
+        
         /* 顶部标题栏 */
         .header {
             display: flex;
@@ -142,72 +345,34 @@
         }
         /* 日志面板 - 重点优化部分 */
         .log-panel {
-            height: 280px; /* 增加高度，显示更多日志 */
+            height: 280px;
             overflow-y: auto;
             position: relative;
-            background: rgba(0, 10, 5, 0.8); /* 更深的背景色 */
+            background: rgba(0, 10, 5, 0.8);
             border: 1px solid rgba(0, 255, 157, 0.4);
         }
-        /* 日志滚动条美化 */
-        .log-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-        .log-panel::-webkit-scrollbar-track {
-            background: rgba(0, 30, 15, 0.5);
-            border-radius: 3px;
-        }
-        .log-panel::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 157, 0.6);
-            border-radius: 3px;
-        }
-        .log-panel::-webkit-scrollbar-thumb:hover {
-            background: #00ff9d;
-        }
-        .log-list {
-            list-style: none;
-            padding: 5px 0;
-        }
+        .log-panel::-webkit-scrollbar { width: 6px; }
+        .log-panel::-webkit-scrollbar-track { background: rgba(0, 30, 15, 0.5); border-radius: 3px; }
+        .log-panel::-webkit-scrollbar-thumb { background: rgba(0, 255, 157, 0.6); border-radius: 3px; }
+        .log-panel::-webkit-scrollbar-thumb:hover { background: #00ff9d; }
+        .log-list { list-style: none; padding: 5px 0; }
         .log-item {
-            font-size: 14px; /* 增大字体 */
-            padding: 10px 15px; /* 增加内边距 */
-            margin: 4px 0; /* 增加项间距 */
-            border-radius: 4px; /* 圆角 */
-            border-left: 3px solid transparent; /* 左侧标记线 */
+            font-size: 14px;
+            padding: 10px 15px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 3px solid transparent;
             transition: background 0.2s;
         }
-        /* 不同类型日志的颜色区分 - 核心优化 */
-        .log-item.log-default {
-            color: #00ff9d;
-            background: rgba(0, 30, 15, 0.3);
-            border-left-color: #00ff9d;
-        }
-        .log-item.log-event {
-            color: #66ccff;
-            background: rgba(0, 40, 60, 0.3);
-            border-left-color: #66ccff;
-        }
-        .log-item.log-warning {
-            color: #ff9966;
-            background: rgba(60, 30, 0, 0.3);
-            border-left-color: #ff9966;
-        }
-        .log-item.log-reward {
-            color: #ffd166;
-            background: rgba(60, 50, 0, 0.3);
-            border-left-color: #ffd166;
-        }
-        /* 日志时间样式优化 */
+        .log-item.log-default { color: #00ff9d; background: rgba(0, 30, 15, 0.3); border-left-color: #00ff9d; }
+        .log-item.log-event { color: #66ccff; background: rgba(0, 40, 60, 0.3); border-left-color: #66ccff; }
+        .log-item.log-warning { color: #ff9966; background: rgba(60, 30, 0, 0.3); border-left-color: #ff9966; }
+        .log-item.log-reward { color: #ffd166; background: rgba(60, 50, 0, 0.3); border-left-color: #ffd166; }
+        .log-item.log-story { color: #ff79c6; background: rgba(40, 0, 30, 0.3); border-left-color: #ff79c6; }
         .log-time {
-            display: inline-block;
-            min-width: 80px; /* 固定时间宽度，对齐文本 */
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: bold;
-            margin-right: 12px;
-        }
-        /* 日志文本样式 */
-        .log-text {
-            display: inline-block;
-            line-height: 1.4;
+            font-size: 11px;
+            color: rgba(0, 255, 157, 0.5);
+            margin-right: 8px;
         }
         /* 右侧信息区 */
         .info-area {
@@ -215,88 +380,8 @@
             flex-direction: column;
             gap: 20px;
         }
-        /* 图鉴面板 */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            max-height: 280px;
-            overflow-y: auto;
-        }
-        .gallery-item {
-            padding: 10px;
-            background: rgba(0, 30, 15, 0.7);
-            border-radius: 4px;
-            border: 1px solid rgba(0, 255, 157, 0.2);
-            font-size: 12px;
-        }
-        .gallery-item.unlocked {
-            border-color: #00ff9d;
-            background: rgba(0, 40, 20, 0.9);
-        }
-        .gallery-item.locked {
-            border-color: rgba(0, 255, 157, 0.1);
-            color: rgba(0, 255, 157, 0.4);
-        }
-        .gallery-name {
-            font-weight: bold;
-            margin-bottom: 3px;
-            color: #00ff9d;
-        }
-        .gallery-item.locked .gallery-name { color: rgba(0, 255, 157, 0.4); }
-        /* 道具面板 */
-        .items-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        .item-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: rgba(0, 30, 15, 0.7);
-            border-radius: 4px;
-            border: 1px solid rgba(0, 255, 157, 0.2);
-            font-size: 12px;
-        }
-        .item-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .item-name {
-            font-weight: bold;
-            color: #00ff9d;
-            margin-bottom: 2px;
-        }
-        .item-desc {
-            color: rgba(0, 255, 157, 0.7);
-            font-size: 11px;
-        }
-        .item-actions {
-            display: flex;
-            gap: 5px;
-        }
-        .item-btn {
-            padding: 5px 10px;
-            background: rgba(0, 40, 20, 0.9);
-            border: 1px solid rgba(0, 255, 157, 0.4);
-            border-radius: 3px;
-            color: #00ff9d;
-            font-size: 11px;
-            cursor: pointer;
-        }
-        .item-btn:disabled {
-            background: rgba(30, 30, 30, 0.5);
-            border-color: rgba(0, 255, 157, 0.1);
-            color: rgba(0, 255, 157, 0.3);
-            cursor: not-allowed;
-        }
-        /* 技能/成就面板 */
         .skills-list, .achievements-list {
-            max-height: 180px;
+            max-height: 120px;
             overflow-y: auto;
         }
         .skill-item, .achievement-item {
@@ -306,16 +391,52 @@
             display: flex;
             justify-content: space-between;
         }
-        .skill-item.unlocked, .achievement-item.unlocked {
-            color: #00ff9d;
-        }
-        .skill-item.locked, .achievement-item.locked {
-            color: rgba(0, 255, 157, 0.4);
-        }
+        .skill-item.unlocked, .achievement-item.unlocked { color: #00ff9d; }
+        .skill-item.locked, .achievement-item.locked { color: rgba(0, 255, 157, 0.4); }
         .skill-buff, .achievement-reward {
             font-size: 11px;
             color: rgba(0, 255, 157, 0.6);
         }
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .item-card {
+            padding: 10px;
+            background: rgba(0, 30, 15, 0.5);
+            border: 1px solid rgba(0, 255, 157, 0.2);
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .item-card:hover {
+            background: rgba(0, 40, 20, 0.8);
+            border-color: #00ff9d;
+        }
+        .item-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .item-name { font-size: 12px; color: #00ff9d; margin-bottom: 5px; }
+        .item-count { font-size: 10px; color: rgba(0, 255, 157, 0.6); }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .gallery-item {
+            padding: 8px;
+            background: rgba(0, 30, 15, 0.5);
+            border: 1px solid rgba(0, 255, 157, 0.2);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 11px;
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+        .gallery-item.unlocked { opacity: 1; border-color: #00ff9d; }
         /* 浮动提示容器（固定位置） */
         .toast-container {
             position: fixed;
@@ -327,7 +448,6 @@
             gap: 8px;
             pointer-events: none;
         }
-        /* 浮动提示（科技风）- 固定位置版 */
         .stat-toast {
             padding: 8px 15px;
             border-radius: 4px;
@@ -398,84 +518,77 @@
         }
         .ending-stat-item {
             font-size: 14px;
-            color: rgba(0, 255, 157, 0.9);
-        }
-        .ending-stat-label {
-            text-transform: uppercase;
-            font-size: 11px;
-            color: rgba(0, 255, 157, 0.6);
-            margin-bottom: 3px;
+            padding: 10px;
+            background: rgba(0, 20, 10, 0.5);
+            border-radius: 4px;
         }
         .ending-desc {
             font-size: 16px;
             line-height: 1.8;
             color: rgba(0, 255, 157, 0.9);
-            margin-bottom: 30px;
+            margin: 20px 0;
         }
         .restart-btn {
-            padding: 12px 30px;
-            background: rgba(0, 40, 20, 0.9);
-            border: 1px solid #00ff9d;
-            border-radius: 4px;
-            color: #00ff9d;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .restart-btn:hover {
+            padding: 15px 40px;
             background: #00ff9d;
             color: #0a0a0a;
+            border: none;
+            font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
         }
-        /* 响应式适配 */
-        @media (max-width: 900px) {
-            .panels-container {
-                grid-template-columns: 1fr;
-            }
-            .status-panel {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .restart-btn:hover {
+            background: #00cc7a;
+            transform: translateY(-2px);
         }
-        @media (max-width: 600px) {
-            .status-panel {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .ending-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .toast-container {
-                top: 10px;
-                right: 10px;
-            }
-            .stat-toast {
-                min-width: 100px;
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-            .log-item {
-                font-size: 13px;
-                padding: 8px 10px;
-            }
-            .log-time {
-                min-width: 70px;
-            }
+        .hidden { display: none !important; }
+        /* 响应式 */
+        @media (max-width: 800px) {
+            .panels-container { grid-template-columns: 1fr; }
+            .info-area { order: -1; }
+            .status-panel { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
 <body>
-    <!-- 数值提示固定容器 -->
-    <div class="toast-container" id="toastContainer"></div>
-    
-    <!-- 顶部标题栏 -->
-    <div class="header">
-        <div class="logo">大学 <span>生存</span></div>
-        <div class="disclaimer">
-            免责声明：本游戏为虚构作品，所有情节、数据均为艺术创作，仅供娱乐。
+    <!-- 新手引导元素 -->
+    <div class="guide-overlay" id="guideOverlay"></div>
+    <div class="guide-highlight" id="guideHighlight"></div>
+    <div class="guide-tooltip" id="guideTooltip">
+        <div class="guide-tooltip-title" id="guideTitle">引导标题</div>
+        <div class="guide-tooltip-text" id="guideText">引导内容</div>
+        <button class="guide-tooltip-btn" id="guideBtn">下一步</button>
+    </div>
+    <div class="guide-arrow" id="guideArrow">⬇</div>
+    <!-- 剧情弹窗 -->
+    <div class="story-modal" id="storyModal">
+        <div class="story-content">
+            <div class="story-header">
+                <div>
+                    <div class="story-chapter" id="storyChapter">第一章 入学</div>
+                    <div class="story-title" id="storyTitle">剧情标题</div>
+                </div>
+                <button class="story-close" id="storyClose">×</button>
+            </div>
+            <div class="story-body" id="storyBody">
+                <!-- 剧情内容 -->
+            </div>
+            <div class="story-choices" id="storyChoices">
+                <!-- 选项按钮 -->
+            </div>
         </div>
     </div>
-
+    <!-- 浮动提示容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+    <!-- 顶部标题 -->
+    <div class="header">
+        <div class="logo">大学<span>生存</span></div>
+        <div class="disclaimer">32周大学生存模拟 | 做出选择，决定未来</div>
+    </div>
     <!-- 状态面板 -->
     <div class="status-panel">
         <div class="status-item">
@@ -503,7 +616,6 @@
             <div class="status-value" id="social">40</div>
         </div>
     </div>
-
     <!-- 核心面板容器 -->
     <div class="panels-container">
         <!-- 左侧游戏区 -->
@@ -518,7 +630,6 @@
                 <button class="action-btn" data-action="exercise">去健身房</button>
                 <button class="action-btn" data-action="skip">跳过本周</button>
             </div>
-
             <!-- 每日目标面板 -->
             <div class="panel">
                 <div class="panel-header">
@@ -530,7 +641,6 @@
                     <div class="status-value">奖励: <span id="goal-reward">+10 金钱</span></div>
                 </div>
             </div>
-
             <!-- 日志面板 -->
             <div class="panel log-panel">
                 <div class="panel-header">
@@ -539,7 +649,6 @@
                 <ul class="log-list" id="log-list"></ul>
             </div>
         </div>
-
         <!-- 右侧信息区 -->
         <div class="info-area">
             <!-- 技能面板 -->
@@ -550,7 +659,6 @@
                 </div>
                 <div class="skills-list" id="skills-list"></div>
             </div>
-
             <!-- 成就面板 -->
             <div class="panel">
                 <div class="panel-header">
@@ -559,7 +667,6 @@
                 </div>
                 <div class="achievements-list" id="achievements-list"></div>
             </div>
-
             <!-- 道具面板 -->
             <div class="panel">
                 <div class="panel-header">
@@ -567,7 +674,6 @@
                 </div>
                 <div class="items-grid" id="items-list"></div>
             </div>
-
             <!-- 图鉴面板 -->
             <div class="panel">
                 <div class="panel-header">
@@ -578,8 +684,466 @@
             </div>
         </div>
     </div>
-
+    <!-- 结局弹窗（初始隐藏） -->
+    <div class="ending-modal hidden" id="endingModal">
+        <div class="ending-content">
+            <div class="ending-title" id="endingTitle">结局标题</div>
+            <div class="ending-stats">
+                <div class="ending-stats-grid" id="endingStats"></div>
+            </div>
+            <div class="ending-desc" id="endingDesc"></div>
+            <button class="restart-btn" id="restartBtn">重新开始</button>
+        </div>
+    </div>
     <script>
+        // ===================== 新手引导系统 =====================
+        const guideSteps = [
+            {
+                target: '.status-panel',
+                title: '📊 属性面板',
+                text: '这是你的五项基础属性：学习（成绩）、健康（体质）、快乐（心情）、金钱（财务）、社交（人脉）。合理分配行动很重要！',
+                position: 'bottom'
+            },
+            {
+                target: '.actions-panel',
+                title: '🎮 行动按钮',
+                text: '每周你可以通过这些按钮执行行动。不同行动会影响不同属性，比如学习提升成绩但会消耗精力。',
+                position: 'top'
+            },
+            {
+                target: '#goal-text',
+                title: '🎯 每日目标',
+                text: '每个周期都有随机目标，完成目标可获得金钱和属性奖励！目标难度会随时间增加。',
+                position: 'right'
+            },
+            {
+                target: '#log-list',
+                title: '📜 事件日志',
+                text: '这里记录你大学生活的点点滴滴。蓝色是事件，橙色是警告，黄色是奖励，粉色是剧情！',
+                position: 'top'
+            },
+            {
+                target: '#skills-list',
+                title: '⚡ 技能系统',
+                text: '当属性达到一定数值时，会自动解锁强力技能！例如学习80+可解锁"学霸光环"，获得永久属性加成。',
+                position: 'left'
+            },
+            {
+                target: '#achievements-list',
+                title: '🏆 成就系统',
+                text: '达成特定条件可解锁成就，获得丰厚奖励！尝试完成所有成就吧！',
+                position: 'left'
+            }
+        ];
+        let currentGuideStep = 0;
+        let isGuideActive = false;
+        function startGuide() {
+            if (localStorage.getItem('hasPlayedGuide')) {
+                return; // 已经玩过引导
+            }
+            isGuideActive = true;
+            currentGuideStep = 0;
+            showGuideStep();
+        }
+        function showGuideStep() {
+            if (currentGuideStep >= guideSteps.length) {
+                endGuide();
+                return;
+            }
+            
+            const step = guideSteps[currentGuideStep];
+            const targetEl = document.querySelector(step.target);
+            
+            if (!targetEl) {
+                currentGuideStep++;
+                showGuideStep();
+                return;
+            }
+            const rect = targetEl.getBoundingClientRect();
+            const highlight = document.getElementById('guideHighlight');
+            const tooltip = document.getElementById('guideTooltip');
+            const title = document.getElementById('guideTitle');
+            const text = document.getElementById('guideText');
+            const btn = document.getElementById('guideBtn');
+            const overlay = document.getElementById('guideOverlay');
+            const arrow = document.getElementById('guideArrow');
+            // 设置高亮框
+            highlight.style.width = rect.width + 20 + 'px';
+            highlight.style.height = rect.height + 20 + 'px';
+            highlight.style.left = rect.left - 10 + 'px';
+            highlight.style.top = rect.top - 10 + 'px';
+            // 设置提示框位置
+            let tooltipX, tooltipY;
+            const gap = 15;
+            
+            switch(step.position) {
+                case 'bottom':
+                    tooltipX = rect.left;
+                    tooltipY = rect.bottom + gap;
+                    arrow.style.display = 'block';
+                    arrow.style.left = rect.left + rect.width/2 - 15 + 'px';
+                    arrow.style.top = rect.top - 40 + 'px';
+                    arrow.textContent = '⬆';
+                    break;
+                case 'top':
+                    tooltipX = rect.left;
+                    tooltipY = rect.top - 180;
+                    arrow.style.display = 'block';
+                    arrow.style.left = rect.left + rect.width/2 - 15 + 'px';
+                    arrow.style.top = rect.bottom + 5 + 'px';
+                    arrow.textContent = '⬇';
+                    break;
+                case 'left':
+                    tooltipX = rect.right + gap;
+                    tooltipY = rect.top;
+                    arrow.style.display = 'block';
+                    arrow.style.left = rect.left - 40 + 'px';
+                    arrow.style.top = rect.top + rect.height/2 - 15 + 'px';
+                    arrow.textContent = '➡';
+                    break;
+                case 'right':
+                    tooltipX = rect.left - 340;
+                    tooltipY = rect.top;
+                    arrow.style.display = 'block';
+                    arrow.style.left = rect.right + 5 + 'px';
+                    arrow.style.top = rect.top + rect.height/2 - 15 + 'px';
+                    arrow.textContent = '⬅';
+                    break;
+            }
+            tooltip.style.left = Math.max(10, tooltipX) + 'px';
+            tooltip.style.top = Math.max(10, tooltipY) + 'px';
+            // 设置内容
+            title.textContent = step.title;
+            text.textContent = step.text;
+            btn.textContent = currentGuideStep === guideSteps.length - 1 ? '开始游戏！' : '下一步';
+            // 显示元素
+            overlay.classList.add('active');
+            highlight.style.display = 'block';
+            tooltip.style.display = 'block';
+            arrow.style.display = 'block';
+            // 按钮事件
+            btn.onclick = () => {
+                currentGuideStep++;
+                showGuideStep();
+            };
+        }
+        function endGuide() {
+            const overlay = document.getElementById('guideOverlay');
+            const highlight = document.getElementById('guideHighlight');
+            const tooltip = document.getElementById('guideTooltip');
+            const arrow = document.getElementById('guideArrow');
+            overlay.classList.remove('active');
+            highlight.style.display = 'none';
+            tooltip.style.display = 'none';
+            arrow.style.display = 'none';
+            isGuideActive = false;
+            localStorage.setItem('hasPlayedGuide', 'true');
+            
+            logEvent('🎉 欢迎来到大学！祝你度过精彩的大学生活！', 'story');
+        }
+        // ===================== 主线剧情系统 =====================
+        const storyData = {
+            // 入学阶段（第1周）
+            week1: {
+                chapter: '第一章 入学',
+                title: '新生报到',
+                hasChoices: true,
+                dialogues: [
+                    { name: '学长', avatar: '👨‍🎓', text: '同学你好！欢迎来到这所大学！你是哪个系的？' },
+                    { name: '你', avatar: '🎒', text: '我是新生，对学校还不熟悉...' },
+                    { name: '学长', avatar: '👨‍🎓', text: '那正好！要加入我们学生会吗？有很多好处哦~' }
+                ],
+                choices: [
+                    { 
+                        text: '🙋 加入学生会，锻炼社交能力',
+                        effect: { social: 10, happiness: 5 },
+                        result: '你加入了学生会，认识了很多新朋友！社交+10，快乐+5'
+                    },
+                    { 
+                        text: '📚 婉拒学长，先熟悉校园',
+                        effect: { study: 5 },
+                        result: '你决定先熟悉校园环境，踩点了图书馆和教学楼。学习+5'
+                    },
+                    { 
+                        text: '💪 加入体育社团',
+                        effect: { health: 10 },
+                        result: '你加入了体育社团，准备锻炼身体！健康+10'
+                    }
+                ]
+            },
+            // 期中考试（第8周）
+            week8: {
+                chapter: '第一学期 期中考试',
+                title: '期中复习',
+                hasChoices: true,
+                dialogues: [
+                    { name: '室友', avatar: '🛏️', text: '喂，下周就要期中考试了！你复习得怎么样？' },
+                    { name: '你', avatar: '😰', text: '还没怎么复习呢...好多内容都不会...' },
+                    { name: '室友', avatar: '🛏️', text: '要不我们组个复习小组？或者你想怎么办？' }
+                ],
+                choices: [
+                    { 
+                        text: '📖 组建复习小组，突击学习',
+                        effect: { study: 15, happiness: -5 },
+                        result: '你组成了复习小组，经过一周苦读，学习大幅提升！学习+15，快乐-5'
+                    },
+                    { 
+                        text: '🎮 先放松一下再复习',
+                        effect: { happiness: 10, study: 5 },
+                        result: '你适当放松后效率更高了！快乐+10，学习+5'
+                    },
+                    { 
+                        text: '💼 去做兼职赚钱',
+                        effect: { money: 80, study: -10 },
+                        result: '你去做了兼职，但错过了复习时间。金钱+80，学习-10'
+                    }
+                ]
+            },
+            // 寒假选择（第16周）
+            week16: {
+                chapter: '第二学期 寒假',
+                title: '假期抉择',
+                hasChoices: true,
+                dialogues: [
+                    { name: '班长', avatar: '📋', text: '同学们，寒假快到了！大家有什么安排吗？' },
+                    { name: '你', avatar: '🤔', text: '我在想要不要留在学校这边...' },
+                    { name: '班长', avatar: '📋', text: '其实有很多选择啦，看你自己想要什么。' }
+                ],
+                choices: [
+                    { 
+                        text: '🏠 回家过年，陪陪家人',
+                        effect: { happiness: 15, money: -50 },
+                        result: '你回家和家人团聚，过了一个温馨的春节！快乐+15，金钱-50（红包）'
+                    },
+                    { 
+                        text: '💼 留在城市打工',
+                        effect: { money: 200, happiness: -10 },
+                        result: '你春节期间打工，赚了不少生活费！金钱+200，快乐-10'
+                    },
+                    { 
+                        text: '✈️ 和朋友去旅行',
+                        effect: { happiness: 20, social: 10, money: -150 },
+                        result: '你和朋友去旅行，度过难忘的时光！快乐+20，社交+10，金钱-150'
+                    }
+                ]
+            },
+            // 期末考试（第24周）
+            week24: {
+                chapter: '第三学期 期末考试',
+                title: '期末备考',
+                hasChoices: true,
+                dialogues: [
+                    { name: '辅导员', avatar: '👨‍🏫', text: '同学们，这次期末考很关键！关乎你们的绩点和未来！' },
+                    { name: '你', avatar: '😰', text: '老师，我有点担心考不好...' },
+                    { name: '辅导员', avatar: '👨‍🏫', text: '没关系，关键时刻要拼一把！你想怎么准备？' }
+                ],
+                choices: [
+                    { 
+                        text: '🔥 全力备考，熬夜复习',
+                        effect: { study: 20, health: -15 },
+                        result: '你拼尽全力复习，但身体有点吃不消。学习+20，健康-15'
+                    },
+                    { 
+                        text: '⚖️ 劳逸结合，适度复习',
+                        effect: { study: 10, health: 5 },
+                        result: '你合理安排时间，既保证了学习又注意身体。学习+10，健康+5'
+                    },
+                    { 
+                        text: '📝 重点突击，找学长辅导',
+                        effect: { study: 15, social: 5, money: -30 },
+                        result: '你找到了学长辅导重点，效率很高！学习+15，社交+5，金钱-30'
+                    }
+                ]
+            },
+            // 毕业选择（第32周）
+            week32: {
+                chapter: '第四学期 毕业季',
+                title: '人生岔路',
+                hasChoices: true,
+                dialogues: [
+                    { name: '导师', avatar: '🎓', text: '四年大学生活即将结束，你有什么打算？' },
+                    { name: '你', avatar: '🎓', text: '我在纠结是继续深造还是工作...' },
+                    { name: '导师', avatar: '🎓', text: '这可能是人生最重要的选择之一，想清楚再做决定。' }
+                ],
+                choices: [
+                    { 
+                        text: '📖 继续读研深造',
+                        effect: { study: 10 },
+                        statCheck: { study: 60 },
+                        result: '你决定继续读研，迎接新的挑战！'
+                    },
+                    { 
+                        text: '💼 步入职场工作',
+                        effect: { money: 100, social: 10 },
+                        statCheck: { social: 50, money: 500 },
+                        result: '你决定步入职场，开始新的旅程！'
+                    },
+                    { 
+                        text: '🚀 自主创业',
+                        effect: { money: 50 },
+                        statCheck: { money: 800, study: 40 },
+                        result: '你决定创业当老板！'
+                    }
+                ]
+            }
+        };
+        let currentStory = null;
+        let currentDialogueIndex = 0;
+        let choiceEffects = null;
+        function checkStoryTrigger() {
+            const week = gameState.week;
+            const storyKey = 'week' + week;
+            
+            // 检查是否有对应周数的剧情
+            if (storyData[storyKey]) {
+                // 第32周需要特殊处理，检查属性条件
+                if (week === 32) {
+                    const story = storyData[storyKey];
+                    // 检查是否有满足条件的选择
+                    const availableChoices = story.choices.filter(choice => {
+                        if (!choice.statCheck) return true;
+                        for (const [stat, min] of Object.entries(choice.statCheck)) {
+                            if (gameState.stats[stat] < min) return false;
+                        }
+                        return true;
+                    });
+                    
+                    if (availableChoices.length > 0) {
+                        triggerStory(storyKey);
+                    }
+                } else {
+                    triggerStory(storyKey);
+                }
+            }
+        }
+        function triggerStory(storyKey) {
+            currentStory = storyData[storyKey];
+            currentDialogueIndex = 0;
+            
+            const modal = document.getElementById('storyModal');
+            const chapter = document.getElementById('storyChapter');
+            const title = document.getElementById('storyTitle');
+            const body = document.getElementById('storyBody');
+            const choices = document.getElementById('storyChoices');
+            const closeBtn = document.getElementById('storyClose');
+            chapter.textContent = currentStory.chapter;
+            title.textContent = currentStory.title;
+            choices.innerHTML = '';
+            
+            // 显示第一个对话
+            showDialogue();
+            
+            // 关闭按钮事件
+            closeBtn.onclick = () => {
+                modal.classList.remove('active');
+                currentStory = null;
+            };
+            
+            modal.classList.add('active');
+            logEvent(`【${currentStory.chapter}】${currentStory.title}`, 'story');
+        }
+        function showDialogue() {
+            const body = document.getElementById('storyBody');
+            const choices = document.getElementById('storyChoices');
+            
+            if (currentDialogueIndex >= currentStory.dialogues.length) {
+                // 对话结束，显示选项
+                if (currentStory.hasChoices) {
+                    showChoices();
+                }
+                return;
+            }
+            
+            const dialogue = currentStory.dialogues[currentDialogueIndex];
+            
+            body.innerHTML = `
+                <div class="story-character">
+                    <div class="story-avatar">${dialogue.avatar}</div>
+                    <div class="story-dialogue">
+                        <div class="story-name">${dialogue.name}</div>
+                        <div class="story-text">${dialogue.text}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 点击继续下一个对话
+            body.onclick = () => {
+                currentDialogueIndex++;
+                showDialogue();
+            };
+        }
+        function showChoices() {
+            const body = document.getElementById('storyBody');
+            const choices = document.getElementById('storyChoices');
+            
+            body.innerHTML = '<div class="story-text" style="text-align:center;color:#00ff9d;margin-bottom:15px;">⬇ 做出你的选择 ⬇</div>';
+            
+            currentStory.choices.forEach((choice, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'story-choice';
+                btn.textContent = choice.text;
+                
+                // 检查属性条件
+                let enabled = true;
+                if (choice.statCheck) {
+                    for (const [stat, min] of Object.entries(choice.statCheck)) {
+                        if (gameState.stats[stat] < min) {
+                            enabled = false;
+                        }
+                    }
+                }
+                
+                if (!enabled) {
+                    btn.style.opacity = '0.4';
+                    btn.style.cursor = 'not-allowed';
+                } else {
+                    btn.onclick = () => {
+                        selectChoice(index);
+                    };
+                }
+                
+                choices.appendChild(btn);
+            });
+        }
+        function selectChoice(index) {
+            const choice = currentStory.choices[index];
+            
+            // 应用效果
+            if (choice.effect) {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                
+                for (const [stat, value] of Object.entries(choice.effect)) {
+                    adjustStat(stat, value, centerX, centerY, true);
+                }
+            }
+            
+            // 显示结果
+            const body = document.getElementById('storyBody');
+            const choices = document.getElementById('storyChoices');
+            
+            body.innerHTML = `
+                <div class="story-character">
+                    <div class="story-avatar">📌</div>
+                    <div class="story-dialogue">
+                        <div class="story-name">系统</div>
+                        <div class="story-text">${choice.result}</div>
+                    </div>
+                </div>
+            `;
+            
+            choices.innerHTML = `
+                <button class="story-choice" id="continueStoryBtn">继续游戏 ▶</button>
+            `;
+            
+            document.getElementById('continueStoryBtn').onclick = () => {
+                document.getElementById('storyModal').classList.remove('active');
+                currentStory = null;
+            };
+            
+            logEvent(`选择: ${choice.text}`, 'story');
+        }
+        // ===================== 原有游戏代码 =====================
         // 游戏状态管理（完全保留原有核心逻辑）
         const gameState = {
             week: 1,
@@ -598,32 +1162,52 @@
             },
             achievements: [],
             gameEnded: false,
-            monthEvents: [8, 16, 24],
+            hasSkippedWeek: false,
             statBottleneck: 70,
             skills: {
-                efficientStudy: { name: '高效学习', condition: (s) => s.study >= 70, unlocked: false, buff: () => ({ study: 2 }) },
-                socialStar: { name: '社交达人', condition: (s) => s.social >= 70, unlocked: false, buff: () => ({ social: 2 }) },
-                fitnessMaster: { name: '健身达人', condition: (s) => s.health >= 80, unlocked: false, buff: () => ({ health: 3 }) },
-                moneyMaster: { name: '理财高手', condition: (s) => s.money >= 1500, unlocked: false, buff: () => ({ money: 5 }) }
+                scholar: {
+                    name: '学霸光环',
+                    unlocked: false,
+                    condition: (s) => s.study >= 80,
+                    buff: () => ({ study: 2 })
+                },
+                healthy: {
+                    name: '健身达人',
+                    unlocked: false,
+                    condition: (s) => s.health >= 80,
+                    buff: () => ({ health: 2 })
+                },
+                socialite: {
+                    name: '社交蝴蝶',
+                    unlocked: false,
+                    condition: (s) => s.social >= 80,
+                    buff: () => ({ social: 2, happiness: 2 })
+                },
+                rich: {
+                    name: '理财高手',
+                    unlocked: false,
+                    condition: (s) => s.money >= 1500,
+                    buff: () => ({ money: 10 })
+                }
             },
-            hasSkippedWeek: false,
-            chanceCrisisWeeks: [5, 12, 19, 28],
             gallery: {
-                total: 12,
-                unlocked: [],
-                events: [
-                    { id: 'event1', name: '偶遇学霸', desc: '图书馆偶遇学霸，学习效率翻倍！' },
-                    { id: 'event2', name: '熬夜感冒', desc: '熬夜学习导致感冒，健康下降！' },
-                    { id: 'event3', name: '游戏连胜', desc: '游戏开黑连胜，快乐值暴涨！' },
-                    { id: 'event4', name: '社团优秀', desc: '社团招新表现优秀，社交值提升！' },
-                    { id: 'event5', name: '黑心老板', desc: '兼职遇到黑心老板，少发工资！' },
-                    { id: 'event6', name: '教练指导', desc: '健身房遇到教练指导，健康值提升！' },
-                    { id: 'event7', name: '高数挂科', desc: '学习值过低，高数挂科！' },
-                    { id: 'event8', name: '捡到钱包', desc: '捡到钱包归还失主，获得感谢金！' },
-                    { id: 'event9', name: '出门淋雨', desc: '出门忘带伞淋雨，健康值下降！' },
-                    { id: 'event10', name: '论文获奖', desc: '论文被推荐为优秀范文，获得奖金！' },
-                    { id: 'event11', name: '突发疾病', desc: '突发疾病，需要花钱看病！' },
-                    { id: 'event12', name: '认识高管', desc: '认识企业高管，获得高薪兼职机会！' }
+                events: [],
+                getProbability: 0.3
+            },
+            events: {
+                list: [
+                    { id: 'event1', name: '奖学金', desc: '获得奖学金！', effect: { money: 100, study: 5 }, probability: 0.1 },
+                    { id: 'event2', name: '感冒', desc: '不幸感冒了...', effect: { health: -10 }, probability: 0.15 },
+                    { id: 'event3', name: '生日派对', desc: '朋友为你庆生！', effect: { happiness: 15, social: 5, money: -30 }, probability: 0.1 },
+                    { id: 'event4', name: '考试挂科', desc: '某门课挂了...', effect: { happiness: -15, study: -5 }, probability: 0.1 },
+                    { id: 'event5', name: '中奖', desc: '运气爆棚！', effect: { money: 50 }, probability: 0.05 },
+                    { id: 'event6', name: '社团活动', desc: '参加社团很有意思！', effect: { social: 10, happiness: 5 }, probability: 0.15 },
+                    { id: 'event7', name: '运动受伤', desc: '运动时受伤了...', effect: { health: -8, happiness: -5 }, probability: 0.1 },
+                    { id: 'event8', name: '论文获奖', desc: '论文被评为优秀！', effect: { study: 10, happiness: 10 }, probability: 0.05 },
+                    { id: 'event9', name: '失恋', desc: '感情受挫...', effect: { happiness: -20, social: -5 }, probability: 0.08 },
+                    { id: 'event10', name: '实习机会', desc: '获得好公司实习！', effect: { money: 200, social: 5 }, probability: 0.08 },
+                    { id: 'event11', name: '捡钱', desc: '在路上捡到钱！', effect: { money: 20, happiness: 5 }, probability: 0.1 },
+                    { id: 'event12', name: '认识高管', desc: '认识企业高管，获得高薪兼职机会！', effect: { money: 100, social: 10 }, probability: 0.05 }
                 ]
             },
             items: {
@@ -636,8 +1220,7 @@
                 getProbability: 0.2
             }
         };
-
-        // DOM 元素（适配新UI结构）
+        // DOM 元素
         const elements = {
             week: document.getElementById('week'),
             study: document.getElementById('study'),
@@ -653,13 +1236,10 @@
             skillsProgress: document.getElementById('skills-progress'),
             achievementsList: document.getElementById('achievements-list'),
             achievementsProgress: document.getElementById('achievements-progress'),
-            galleryList: document.getElementById('gallery-list'),
-            galleryProgress: document.getElementById('gallery-progress'),
             itemsList: document.getElementById('items-list'),
             toastContainer: document.getElementById('toastContainer')
         };
-
-        // 属性名映射（全中文）
+        // 属性名映射
         function getStatName(stat) {
             const names = {
                 study: '学习',
@@ -670,25 +1250,16 @@
             };
             return names[stat] || stat;
         }
-
-        // 浮动提示（固定位置版）
+        // 浮动提示
         function showStatToast(stat, value, x, y, isReward = false) {
             if (gameState.gameEnded) return;
-            
             const toast = document.createElement('div');
             toast.className = `stat-toast ${isReward ? 'stat-reward' : (value > 0 ? 'stat-plus' : 'stat-minus')}`;
             toast.textContent = isReward ? `奖励 +${value} ${getStatName(stat)}` : `${value > 0 ? '+' : ''}${value} ${getStatName(stat)}`;
-            
-            // 添加到固定容器中
             elements.toastContainer.appendChild(toast);
-            
-            // 动画结束后移除
-            setTimeout(() => {
-                toast.remove();
-            }, 2500);
+            setTimeout(() => { toast.remove(); }, 2500);
         }
-
-        // 属性瓶颈检测（适配新UI高亮）
+        // 属性瓶颈检测
         function checkStatBottleneck() {
             const stats = ['study', 'health', 'happiness', 'social'];
             stats.forEach(stat => {
@@ -700,18 +1271,15 @@
                 }
             });
         }
-
-        // 技能解锁检测 + 面板更新
+        // 技能解锁检测
         function checkSkills() {
             const skills = gameState.skills;
             let unlockedCount = Object.values(skills).filter(s => s.unlocked).length;
             elements.skillsProgress.textContent = `${unlockedCount}/4`;
-
-            let updated = false;
+            
             for (const [key, skill] of Object.entries(skills)) {
                 if (!skill.unlocked && skill.condition(gameState.stats)) {
                     skill.unlocked = true;
-                    updated = true;
                     logEvent(`技能解锁: ${skill.name}`, 'event');
                     const buff = skill.buff();
                     const centerX = window.innerWidth/2;
@@ -721,8 +1289,6 @@
                     }
                 }
             }
-
-            // 更新技能面板UI
             elements.skillsList.innerHTML = '';
             for (const [key, skill] of Object.entries(skills)) {
                 const skillEl = document.createElement('div');
@@ -735,8 +1301,6 @@
                 `;
                 elements.skillsList.appendChild(skillEl);
             }
-
-            // 返回激活的buff
             const activeBuffs = {};
             for (const [key, skill] of Object.entries(skills)) {
                 if (skill.unlocked) {
@@ -748,8 +1312,7 @@
             }
             return activeBuffs;
         }
-
-        // 成就解锁检测 + 面板更新
+        // 成就检测
         function checkAchievements() {
             const s = gameState.stats;
             const achievements = [
@@ -759,14 +1322,10 @@
                 { id: 'full-attendance', name: '全勤达人', condition: !gameState.hasSkippedWeek, reward: { health: 10 }, desc: '未使用跳过本周' },
                 { id: 'all-round', name: '六边形战士', condition: s.study >= 60 && s.health >= 60 && s.happiness >= 60 && s.social >= 60 && s.money >= 600, reward: { all: 5 }, desc: '所有属性≥60' }
             ];
-
-            let updated = false;
             for (const ach of achievements) {
                 if (ach.condition && !gameState.achievements.includes(ach.id)) {
                     gameState.achievements.push(ach.id);
-                    updated = true;
                     logEvent(`成就解锁: ${ach.name}`, 'reward');
-                    
                     const centerX = window.innerWidth/2;
                     const centerY = window.innerHeight/2;
                     if (ach.reward.all) {
@@ -782,14 +1341,11 @@
                     }
                 }
             }
-
-            // 更新成就面板UI
             elements.achievementsProgress.textContent = `${gameState.achievements.length}/5`;
             elements.achievementsList.innerHTML = '';
             achievements.forEach(ach => {
                 const achEl = document.createElement('div');
                 achEl.className = `achievement-item ${gameState.achievements.includes(ach.id) ? 'unlocked' : 'locked'}`;
-                const rewardText = ach.reward.all ? '全属性+5' : Object.entries(ach.reward).map(([s, v]) => `+${v} ${getStatName(s)}`).join(' ');
                 achEl.innerHTML = `
                     <span>${ach.name}</span>
                     <span class="achievement-reward">${ach.desc}</span>
@@ -797,93 +1353,79 @@
                 elements.achievementsList.appendChild(achEl);
             });
         }
-
         // 图鉴面板更新
         function updateGalleryPanel() {
-            const gallery = gameState.gallery;
-            elements.galleryProgress.textContent = `${gallery.unlocked.length}/${gallery.total}`;
-            elements.galleryList.innerHTML = '';
+            const gallery = document.getElementById('gallery-list');
+            const progress = document.getElementById('gallery-progress');
+            const events = gameState.events.list;
             
-            gallery.events.forEach(event => {
-                const galleryEl = document.createElement('div');
-                galleryEl.className = `gallery-item ${gallery.unlocked.includes(event.id) ? 'unlocked' : 'locked'}`;
-                galleryEl.innerHTML = `
-                    <div class="gallery-name">${event.name}</div>
-                    <div>${event.desc}</div>
-                `;
-                elements.galleryList.appendChild(galleryEl);
+            gallery.innerHTML = '';
+            events.forEach(event => {
+                const el = document.createElement('div');
+                el.className = `gallery-item ${gameState.gallery.events.includes(event.id) ? 'unlocked' : ''}`;
+                el.textContent = event.name;
+                gallery.appendChild(el);
             });
+            
+            progress.textContent = `${gameState.gallery.events.length}/${events.length}`;
         }
-
-        // 解锁图鉴事件
-        function unlockGalleryEvent(eventId) {
-            const gallery = gameState.gallery;
-            if (!gallery.unlocked.includes(eventId)) {
-                gallery.unlocked.push(eventId);
-                logEvent(`图鉴解锁: ${gallery.events.find(e => e.id === eventId).name}`, 'event');
-                updateGalleryPanel();
-            }
-        }
-
         // 道具面板更新
         function updateItemsPanel() {
-            const items = gameState.items.list;
-            elements.itemsList.innerHTML = '';
+            const itemsEl = document.getElementById('items-list');
+            itemsEl.innerHTML = '';
             
-            items.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'item-card';
-                itemEl.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-name">${item.name} (x${item.count})</div>
-                        <div class="item-desc">${item.desc} | 价格: ${item.cost}元</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="item-btn" ${item.count === 0 ? 'disabled' : ''} data-item="${item.id}">使用</button>
-                        <button class="item-btn" ${gameState.stats.money < item.cost ? 'disabled' : ''} data-buy="${item.id}">购买</button>
-                    </div>
+            gameState.items.list.forEach(item => {
+                const el = document.createElement('div');
+                el.className = `item-card ${item.count > 0 ? '' : 'disabled'}`;
+                el.innerHTML = `
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-count">x${item.count}</div>
                 `;
-                elements.itemsList.appendChild(itemEl);
                 
-                // 绑定使用/购买事件
-                itemEl.querySelector(`button[data-item="${item.id}"]`).addEventListener('click', () => useItem(item.id));
-                itemEl.querySelector(`button[data-buy="${item.id}"]`).addEventListener('click', () => buyItem(item.id));
+                if (item.count > 0) {
+                    el.onclick = () => useItem(item);
+                }
+                
+                itemsEl.appendChild(el);
             });
         }
-
         // 使用道具
-        function useItem(itemId) {
-            if (gameState.gameEnded) return;
-            const item = gameState.items.list.find(i => i.id === itemId);
-            if (!item || item.count === 0) return;
+        function useItem(item) {
+            if (item.count <= 0 || gameState.gameEnded) return;
             
             item.count--;
-            logEvent(`使用道具: ${item.name}`, 'event');
-            
             const centerX = window.innerWidth/2;
             const centerY = window.innerHeight/2;
+            
             for (const [stat, value] of Object.entries(item.effect)) {
                 adjustStat(stat, value, centerX, centerY, true);
             }
             
+            logEvent(`使用道具: ${item.name}`, 'reward');
             updateItemsPanel();
-            updateUI();
         }
-
-        // 购买道具
-        function buyItem(itemId) {
-            if (gameState.gameEnded) return;
-            const item = gameState.items.list.find(i => i.id === itemId);
-            if (!item || gameState.stats.money < item.cost) return;
+        // 随机事件触发
+        function triggerRandomEvent() {
+            if (Math.random() > gameState.items.getProbability) return;
             
-            gameState.stats.money -= item.cost;
-            item.count++;
-            logEvent(`购买道具: ${item.name} (花费: ${item.cost}元)`, 'event');
+            const events = gameState.events.list;
+            const event = events[Math.floor(Math.random() * events.length)];
             
-            updateItemsPanel();
-            updateUI();
+            if (!gameState.gallery.events.includes(event.id)) {
+                gameState.gallery.events.push(event.id);
+                logEvent(`解锁图鉴: ${event.name}`, 'event');
+            }
+            
+            if (Math.random() < event.probability) {
+                logEvent(`事件: ${event.desc}`, 'event');
+                const centerX = window.innerWidth/2;
+                const centerY = window.innerHeight/2;
+                
+                for (const [stat, value] of Object.entries(event.effect)) {
+                    adjustStat(stat, value, centerX, centerY);
+                }
+            }
         }
-
         // 随机获得道具
         function randomGetItem() {
             if (Math.random() < gameState.items.getProbability) {
@@ -894,30 +1436,25 @@
                 updateItemsPanel();
             }
         }
-
-        // 日志记录 - 核心优化：分类颜色+排版
+        // 日志记录
         function logEvent(message, type = 'default') {
             const time = new Date().toLocaleTimeString();
             const logEl = document.createElement('li');
-            // 应用不同类型的样式类
             logEl.className = `log-item log-${type}`;
-            // 优化排版结构：时间+文本分离
             logEl.innerHTML = `
                 <span class="log-time">[${time}]</span>
                 <span class="log-text">${message}</span>
             `;
             elements.logList.appendChild(logEl);
-            // 自动滚动到底部
             elements.logList.scrollTop = elements.logList.scrollHeight;
         }
-
-        // 调整属性值（保留核心逻辑）
+        // 调整属性值
         function adjustStat(stat, value, eventX, eventY, isReward = false) {
             if (gameState.gameEnded) return 0;
-            const oldValue = gameState.stats[stat];
             
-            // 应用技能buff
+            const oldValue = gameState.stats[stat];
             const activeBuffs = checkSkills();
+            
             let actualValue = value;
             if (value > 0 && activeBuffs[stat]) {
                 actualValue += activeBuffs[stat];
@@ -936,8 +1473,8 @@
             } else if (stat === 'happiness' && oldValue < 20) {
                 penalty = -1;
             }
-            
             actualValue += penalty;
+            
             if (penalty < 0) {
                 logEvent(`惩罚: ${getStatName(stat)}过低，额外扣减${-penalty}点`, 'warning');
             }
@@ -948,8 +1485,8 @@
             } else {
                 gameState.stats[stat] = Math.max(0, Math.min(100, oldValue + actualValue));
             }
-            const finalValue = gameState.stats[stat] - oldValue;
             
+            const finalValue = gameState.stats[stat] - oldValue;
             if (finalValue !== 0) {
                 showStatToast(stat, finalValue, eventX, eventY, isReward);
                 if (stat === gameState.dailyGoal.type && finalValue > 0) {
@@ -957,23 +1494,24 @@
                     checkDailyGoal();
                 }
             }
+            
             return finalValue;
         }
-
         // 检查每日目标
         function checkDailyGoal() {
             if (gameState.dailyGoal.progress >= gameState.dailyGoal.target) {
                 const rewardStat = ['study', 'health', 'happiness', 'social'][Math.floor(Math.random() * 4)];
                 const rewardValue = Math.floor(Math.random() * 5) + 1;
+                
                 gameState.stats.money += gameState.dailyGoal.reward.money;
                 gameState.stats[rewardStat] = Math.max(0, Math.min(100, gameState.stats[rewardStat] + rewardValue));
                 
                 logEvent(`目标完成: 获得奖励 +${gameState.dailyGoal.reward.money} 金钱 +${rewardValue} ${getStatName(rewardStat)}`, 'reward');
                 showStatToast(rewardStat, rewardValue, window.innerWidth/2, window.innerHeight/2, true);
+                
                 resetDailyGoal();
             }
         }
-
         // 重置每日目标
         function resetDailyGoal() {
             const stats = ['study', 'health', 'happiness', 'social'];
@@ -994,139 +1532,95 @@
             elements.goalReward.textContent = `+${rewardMoney} 金钱`;
             elements.goalProgress.textContent = `0/${randomTarget}`;
         }
-
         // 处理每周事件
         function handleWeeklyEvents() {
-            // 月度事件
-            if (gameState.monthEvents.includes(gameState.week)) {
-                const events = [
-                    { id: 'event1', desc: '月考来临！学习值大幅提升', stat: 'study', value: 15, penaltyStat: 'happiness', penaltyValue: -5 },
-                    { id: 'event2', desc: '校园体检！健康值小幅提升', stat: 'health', value: 8 },
-                    { id: 'event3', desc: '社团招新！社交值大幅提升', stat: 'social', value: 20, penaltyStat: 'study', penaltyValue: -3 }
-                ];
-                const randomEvent = events[Math.floor(Math.random() * events.length)];
-                unlockGalleryEvent(randomEvent.id);
-                logEvent(`月度事件: ${randomEvent.desc}`, 'event');
-                
-                const centerX = window.innerWidth/2;
-                const centerY = window.innerHeight/2;
-                adjustStat(randomEvent.stat, randomEvent.value, centerX, centerY);
-                
-                if (randomEvent.penaltyStat) {
-                    adjustStat(randomEvent.penaltyStat, randomEvent.penaltyValue, centerX, centerY);
-                }
+            // 80%概率触发随机事件
+            if (Math.random() < 0.8) {
+                triggerRandomEvent();
             }
-            
-            // 危机周事件
-            if (gameState.chanceCrisisWeeks.includes(gameState.week)) {
-                const crises = [
-                    { id: 'event7', desc: '高数挂科危机！学习值不足60将扣减更多', check: s => s.study < 60, stat: 'study', value: -10, penaltyStat: 'happiness', penaltyValue: -15 },
-                    { id: 'event11', desc: '突发疾病！健康值不足70将扣减更多', check: s => s.health < 70, stat: 'health', value: -15, penaltyStat: 'money', penaltyValue: -200 },
-                    { id: 'event5', desc: '兼职被骗！金钱值不足800将扣减更多', check: s => s.money < 800, stat: 'money', value: -100, penaltyStat: 'happiness', penaltyValue: -10 }
-                ];
-                const randomCrisis = crises[Math.floor(Math.random() * crises.length)];
-                unlockGalleryEvent(randomCrisis.id);
-                
-                const centerX = window.innerWidth/2;
-                const centerY = window.innerHeight/2;
-                if (randomCrisis.check(gameState.stats)) {
-                    logEvent(`危机事件: ${randomCrisis.desc} (触发惩罚)`, 'warning');
-                    adjustStat(randomCrisis.stat, randomCrisis.value, centerX, centerY);
-                    adjustStat(randomCrisis.penaltyStat, randomCrisis.penaltyValue, centerX, centerY);
-                } else {
-                    logEvent(`危机事件: ${randomCrisis.desc} (成功规避)`, 'event');
-                    adjustStat('happiness', 5, centerX, centerY);
-                }
-            }
-            
-            // 随机道具获取
+            // 20%概率获得道具
             randomGetItem();
         }
-
-        // 检查游戏结束条件
+        // 检查游戏结束
         function checkGameEnd() {
-            if (gameState.week >= 32) {
-                gameState.gameEnded = true;
-                showEnding();
+            const s = gameState.stats;
+            
+            // 检查属性过低
+            if (s.health <= 0) {
+                showEnding('unhealthy', '健康值为0，被迫退学！');
+                return true;
+            }
+            if (s.happiness <= 0) {
+                showEnding('lazy', '快乐值为0，抑郁退学！');
+                return true;
+            }
+            if (s.money < 0) {
+                showEnding('failed', '金钱为负，被迫退学！');
                 return true;
             }
             
-            // 失败条件
-            const stats = gameState.stats;
-            if (stats.study <= 0 || stats.health <= 0 || stats.happiness <= 0) {
-                gameState.gameEnded = true;
-                showEnding(false);
+            // 第32周结束
+            if (gameState.week > 32) {
+                // 根据属性决定结局
+                if (s.study >= 80) {
+                    showEnding('scholar', '成功保研！成为学霸！');
+                } else if (s.social >= 80) {
+                    showEnding('social', '社交达人！人脉广泛！');
+                } else if (s.health >= 80) {
+                    showEnding('healthy', '身体倍棒！精力充沛！');
+                } else if (s.money >= 1500) {
+                    showEnding('rich', '创业成功！财务自由！');
+                } else if (s.study < 30 && s.social < 30) {
+                    showEnding('lazy', '彻底躺平！快乐无边！');
+                } else if (s.study >= 60 && s.health >= 60 && s.happiness >= 60 && s.social >= 60 && s.money >= 600) {
+                    showEnding('balanced', '全面发展！人生赢家！');
+                } else {
+                    showEnding('normal', '平淡毕业，前路漫长！');
+                }
                 return true;
             }
             
             return false;
         }
-
         // 显示结局
-        function showEnding(isSuccess = true) {
-            const endingModal = document.createElement('div');
-            endingModal.className = 'ending-modal';
+        function showEnding(type, desc) {
+            gameState.gameEnded = true;
             
-            let endingTitle, endingDesc;
+            const endings = {
+                scholar: { title: '保研学霸', desc: '你以优异的成绩获得保研资格，继续深造！' },
+                social: { title: '社交达人', desc: '你拥有广泛的人脉，成为社交圈的核心人物！' },
+                healthy: { title: '健身教练', desc: '你保持了强健的体魄，甚至可以考虑当健身教练！' },
+                rich: { title: '创业新贵', desc: '你积累了丰厚的财富，成为年轻有为的企业家！' },
+                lazy: { title: '躺平大师', desc: '你选择了轻松的生活方式，享受当下的快乐！' },
+                unhealthy: { title: '退学', desc: '健康是最重要的，希望你好好休养...' },
+                failed: { title: '经济困难', desc: '经济问题导致了学业中断，这是一个艰难的教训...' },
+                balanced: { title: '人生赢家', desc: '你全面发展，是同学眼中的六边形战士！' },
+                normal: { title: '普通毕业', desc: '你完成了大学学业，前方还有更长的路要走。' }
+            };
+            
+            const ending = endings[type] || endings.normal;
+            
+            document.getElementById('endingTitle').textContent = ending.title;
+            document.getElementById('endingDesc').textContent = ending.desc;
+            
+            const statsGrid = document.getElementById('endingStats');
             const stats = gameState.stats;
-            
-            if (!isSuccess) {
-                endingTitle = '游戏失败';
-                if (stats.study <= 0) endingDesc = '你的学习值过低，被学校劝退了...';
-                else if (stats.health <= 0) endingDesc = '你的健康值过低，被迫休学治疗...';
-                else if (stats.happiness <= 0) endingDesc = '你的快乐值过低，陷入抑郁状态...';
-            } else {
-                endingTitle = '游戏成功';
-                if (stats.study >= 90) endingDesc = '你以优异的成绩完成了大学学业，获得了保研资格！';
-                else if (stats.social >= 90) endingDesc = '你在大学积累了广泛的人脉，毕业即获得名企offer！';
-                else if (stats.money >= 2000) endingDesc = '你在大学实现了经济独立，毕业创业成功！';
-                else endingDesc = '你顺利完成了大学学业，开启了人生新篇章！';
-            }
-            
-            endingModal.innerHTML = `
-                <div class="ending-content">
-                    <div class="ending-title">${endingTitle}</div>
-                    <div class="ending-stats">
-                        <div class="ending-stats-grid">
-                            <div class="ending-stat-item">
-                                <div class="ending-stat-label">学习</div>
-                                <div>${stats.study}</div>
-                            </div>
-                            <div class="ending-stat-item">
-                                <div class="ending-stat-label">健康</div>
-                                <div>${stats.health}</div>
-                            </div>
-                            <div class="ending-stat-item">
-                                <div class="ending-stat-label">快乐</div>
-                                <div>${stats.happiness}</div>
-                            </div>
-                            <div class="ending-stat-item">
-                                <div class="ending-stat-label">金钱</div>
-                                <div>${stats.money}</div>
-                            </div>
-                            <div class="ending-stat-item">
-                                <div class="ending-stat-label">社交</div>
-                                <div>${stats.social}</div>
-                            </div>
-                            <div class="ending-stat-item">
-                                <div class="ending-stat-label">解锁成就</div>
-                                <div>${gameState.achievements.length}/5</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ending-desc">${endingDesc}</div>
-                    <button class="restart-btn">重新开始</button>
-                </div>
+            statsGrid.innerHTML = `
+                <div class="ending-stat-item">学习: ${stats.study}</div>
+                <div class="ending-stat-item">健康: ${stats.health}</div>
+                <div class="ending-stat-item">快乐: ${stats.happiness}</div>
+                <div class="ending-stat-item">金钱: ${stats.money}</div>
+                <div class="ending-stat-item">社交: ${stats.social}</div>
+                <div class="ending-stat-item">成就: ${gameState.achievements.length}/5</div>
             `;
             
-            document.body.appendChild(endingModal);
+            document.getElementById('endingModal').classList.remove('hidden');
             
-            // 重新开始按钮事件
-            endingModal.querySelector('.restart-btn').addEventListener('click', () => {
+            // 重新开始按钮
+            document.querySelector('.restart-btn').addEventListener('click', () => {
                 location.reload();
             });
         }
-
         // 更新UI
         function updateUI() {
             elements.week.textContent = gameState.week;
@@ -1135,7 +1629,6 @@
             elements.happiness.textContent = gameState.stats.happiness;
             elements.money.textContent = gameState.stats.money;
             elements.social.textContent = gameState.stats.social;
-            
             elements.goalProgress.textContent = `${gameState.dailyGoal.progress}/${gameState.dailyGoal.target}`;
             
             checkStatBottleneck();
@@ -1144,9 +1637,11 @@
             updateGalleryPanel();
             updateItemsPanel();
         }
-
         // 处理行动按钮点击
         function handleAction(action, event) {
+            // 引导期间禁止操作
+            if (isGuideActive) return;
+            
             if (gameState.gameEnded) return;
             
             const x = event.clientX;
@@ -1205,12 +1700,14 @@
             // 处理每周事件
             handleWeeklyEvents();
             
+            // 检查主线剧情触发
+            checkStoryTrigger();
+            
             // 检查游戏结束
             if (!checkGameEnd()) {
                 updateUI();
             }
         }
-
         // 初始化游戏
         function initGame() {
             // 绑定行动按钮事件
@@ -1225,8 +1722,12 @@
             resetDailyGoal();
             updateUI();
             logEvent('游戏开始！祝你在大学生存32周', 'default');
+            
+            // 启动新手引导
+            setTimeout(() => {
+                startGuide();
+            }, 500);
         }
-
         // 启动游戏
         initGame();
     </script>

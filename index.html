@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大学生活模拟器 | 多结局版</title>
+    <title>大学生活模拟器 | 32周版（结局修复）</title>
     <style>
-        /* 基础样式保留 */
+        /* 基础样式保留并优化 */
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
         .stats { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
         .stat-box { padding: 10px; border: 2px solid #333; border-radius: 8px; min-width: 80px; text-align: center; background: white; }
+        .stat-box.highlight { border-color: #ff9800; background: #fff8e1; } /* 属性瓶颈高亮 */
         .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 20px 0; }
         .action-btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; background: #4CAF50; color: white; font-size: 16px; transition: background 0.3s; }
         .action-btn:hover { background: #45a049; }
         .action-btn:disabled { background: #cccccc; cursor: not-allowed; }
         .event-log { margin: 20px 0; padding: 10px; border: 1px solid #ccc; height: 200px; overflow-y: auto; background: white; }
         .goal-box { padding: 15px; border: 2px solid #2196F3; border-radius: 8px; margin: 20px 0; background: white; }
+        .month-event { padding: 10px; border-left: 4px solid #e91e63; background: #ffebee; margin: 10px 0; } /* 月度事件样式 */
         /* 属性加成浮动提示 */
         .stat-toast {
             position: fixed;
@@ -28,6 +30,7 @@
         }
         .stat-plus { background: #4CAF50; }
         .stat-minus { background: #f44336; }
+        .stat-reward { background: #ff9800; } /* 奖励提示色 */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -38,7 +41,7 @@
         }
         .failed-exam { color: #f44336; font-weight: bold; }
         .achievement { color: #ff9800; font-weight: bold; }
-        /* 新增：结局弹窗样式 */
+        /* 结局弹窗样式 */
         .ending-modal {
             position: fixed;
             top: 0;
@@ -106,14 +109,14 @@
     </style>
 </head>
 <body>
-    <h1>大学生活模拟器</h1>
+    <h1>大学生活模拟器（32周版）</h1>
     <div class="stats">
         <div class="stat-box">周数: <span id="week">1</span></div>
-        <div class="stat-box">学习: <span id="study">50</span></div>
-        <div class="stat-box">健康: <span id="health">80</span></div>
-        <div class="stat-box">快乐: <span id="happiness">70</span></div>
-        <div class="stat-box">金钱: <span id="money">1000</span></div>
-        <div class="stat-box">社交: <span id="social">40</span></div>
+        <div class="stat-box" id="study-box">学习: <span id="study">50</span></div>
+        <div class="stat-box" id="health-box">健康: <span id="health">80</span></div>
+        <div class="stat-box" id="happiness-box">快乐: <span id="happiness">70</span></div>
+        <div class="stat-box" id="money-box">金钱: <span id="money">1000</span></div>
+        <div class="stat-box" id="social-box">社交: <span id="social">40</span></div>
     </div>
 
     <!-- 每日目标 -->
@@ -135,7 +138,7 @@
     <div class="event-log" id="event-log"></div>
 
     <script>
-        // 游戏状态管理
+        // 游戏状态管理（32周结束 + 新增游戏性参数）
         const gameState = {
             week: 1,
             stats: {
@@ -152,7 +155,9 @@
                 reward: { money: 10 }
             },
             achievements: [],
-            gameEnded: false // 新增：标记游戏是否结束
+            gameEnded: false,
+            monthEvents: [8, 16, 24], // 8/16/24周触发月度大事件
+            statBottleneck: 70 // 属性瓶颈值（≥70时提升难度）
         };
 
         // DOM 元素
@@ -163,18 +168,23 @@
             happiness: document.getElementById('happiness'),
             money: document.getElementById('money'),
             social: document.getElementById('social'),
+            studyBox: document.getElementById('study-box'),
+            healthBox: document.getElementById('health-box'),
+            happinessBox: document.getElementById('happiness-box'),
+            moneyBox: document.getElementById('money-box'),
+            socialBox: document.getElementById('social-box'),
             eventLog: document.getElementById('event-log'),
             goalText: document.getElementById('goal-text'),
             goalReward: document.getElementById('goal-reward'),
             goalProgress: document.getElementById('goal-progress')
         };
 
-        // 属性加成可视化提示
-        function showStatToast(stat, value, x, y) {
-            if (gameState.gameEnded) return; // 游戏结束后不显示提示
+        // 属性加成可视化提示（新增奖励提示类型）
+        function showStatToast(stat, value, x, y, isReward = false) {
+            if (gameState.gameEnded) return;
             const toast = document.createElement('div');
-            toast.className = `stat-toast ${value > 0 ? 'stat-plus' : 'stat-minus'}`;
-            toast.textContent = `${value > 0 ? '+' : ''}${value} ${getStatName(stat)}`;
+            toast.className = `stat-toast ${isReward ? 'stat-reward' : (value > 0 ? 'stat-plus' : 'stat-minus')}`;
+            toast.textContent = isReward ? `🎁 +${value} ${getStatName(stat)}` : `${value > 0 ? '+' : ''}${value} ${getStatName(stat)}`;
             toast.style.left = `${x}px`;
             toast.style.top = `${y}px`;
             document.body.appendChild(toast);
@@ -195,7 +205,25 @@
             return names[stat] || stat;
         }
 
-        // 更新UI
+        // 属性瓶颈检测（≥70时提升难度+高亮提示）
+        function checkStatBottleneck() {
+            const boxes = [
+                { stat: 'study', box: elements.studyBox },
+                { stat: 'health', box: elements.healthBox },
+                { stat: 'happiness', box: elements.happinessBox },
+                { stat: 'social', box: elements.socialBox }
+            ];
+            
+            boxes.forEach(item => {
+                if (gameState.stats[item.stat] >= gameState.statBottleneck) {
+                    item.box.classList.add('highlight');
+                } else {
+                    item.box.classList.remove('highlight');
+                }
+            });
+        }
+
+        // 更新UI（新增瓶颈检测调用）
         function updateUI() {
             elements.week.textContent = gameState.week;
             elements.study.textContent = gameState.stats.study;
@@ -206,57 +234,135 @@
             elements.goalText.textContent = `${getStatName(gameState.dailyGoal.type)}提升${gameState.dailyGoal.target}点`;
             elements.goalReward.textContent = `+${gameState.dailyGoal.reward.money} 金钱`;
             elements.goalProgress.textContent = `${gameState.dailyGoal.progress}/${gameState.dailyGoal.target}`;
+            checkStatBottleneck(); // 检测属性瓶颈
         }
 
         // 检查每日目标
         function checkDailyGoal() {
             if (gameState.dailyGoal.progress >= gameState.dailyGoal.target) {
+                // 完成目标有概率获得额外随机奖励
+                const rewardStat = ['study', 'health', 'happiness', 'social'][Math.floor(Math.random() * 4)];
+                const rewardValue = Math.floor(Math.random() * 5) + 1;
                 gameState.stats.money += gameState.dailyGoal.reward.money;
-                logEvent(`🎉 完成每日目标！获得奖励：+${gameState.dailyGoal.reward.money} 金钱`);
+                gameState.stats[rewardStat] = Math.max(0, Math.min(100, gameState.stats[rewardStat] + rewardValue));
+                
+                logEvent(`🎉 完成每日目标！获得基础奖励：+${gameState.dailyGoal.reward.money} 金钱，额外奖励：+${rewardValue} ${getStatName(rewardStat)}`);
+                showStatToast(rewardStat, rewardValue, window.innerWidth/2, window.innerHeight/2, true); // 奖励提示
                 resetDailyGoal();
             }
         }
 
-        // 重置每日目标
+        // 重置每日目标（难度随周数提升）
         function resetDailyGoal() {
             const stats = ['study', 'health', 'happiness', 'social'];
             const randomStat = stats[Math.floor(Math.random() * stats.length)];
-            const randomTarget = Math.floor(Math.random() * 8) + 3;
+            // 周数越高，目标难度越大（32周适配）
+            const baseTarget = Math.floor(Math.random() * 8) + 3;
+            const difficultyBoost = Math.min(Math.floor(gameState.week / 4), 5); // 每4周提升难度，最高+5
+            const randomTarget = baseTarget + difficultyBoost;
+            
+            // 目标奖励随难度提升
+            const rewardMoney = Math.floor(Math.random() * 15) + 10 + difficultyBoost * 2;
+            
             gameState.dailyGoal = {
                 type: randomStat,
                 target: randomTarget,
                 progress: 0,
-                reward: { money: Math.floor(Math.random() * 15) + 10 }
+                reward: { money: rewardMoney }
             };
             updateUI();
         }
 
-        // 记录事件日志
-        function logEvent(message) {
+        // 记录事件日志（新增月度事件样式）
+        function logEvent(message, isMonthEvent = false) {
             const time = new Date().toLocaleTimeString();
             const logItem = document.createElement('div');
-            logItem.innerHTML = `[${time}] ${message}`;
+            if (isMonthEvent) {
+                logItem.className = 'month-event';
+                logItem.innerHTML = `[${time}] 📅 月度大事件：${message}`;
+            } else {
+                logItem.innerHTML = `[${time}] ${message}`;
+            }
             elements.eventLog.appendChild(logItem);
             elements.eventLog.scrollTop = elements.eventLog.scrollHeight;
         }
 
-        // 调整属性值
+        // 调整属性值（新增瓶颈难度：≥70时提升效果减半）
         function adjustStat(stat, value, eventX, eventY) {
-            if (gameState.gameEnded) return 0; // 游戏结束后不调整属性
+            if (gameState.gameEnded) return 0;
             const oldValue = gameState.stats[stat];
-            gameState.stats[stat] = Math.max(0, Math.min(100, oldValue + value));
-            const actualValue = gameState.stats[stat] - oldValue;
-            if (actualValue !== 0) {
-                showStatToast(stat, actualValue, eventX, eventY);
-                if (stat === gameState.dailyGoal.type && actualValue > 0) {
-                    gameState.dailyGoal.progress += actualValue;
+            
+            // 属性≥瓶颈值时，提升效果减半（扣减效果不变）
+            let actualValue = value;
+            if (oldValue >= gameState.statBottleneck && value > 0) {
+                actualValue = Math.floor(value / 2);
+                if (actualValue < 1) actualValue = 1; // 保证至少+1
+            }
+            
+            gameState.stats[stat] = Math.max(0, Math.min(100, oldValue + actualValue));
+            const finalValue = gameState.stats[stat] - oldValue;
+            
+            if (finalValue !== 0) {
+                showStatToast(stat, finalValue, eventX, eventY);
+                if (stat === gameState.dailyGoal.type && finalValue > 0) {
+                    gameState.dailyGoal.progress += finalValue;
                     checkDailyGoal();
                 }
             }
-            return actualValue;
+            return finalValue;
         }
 
-        // 随机事件
+        // 月度大事件（8/16/24周触发）
+        function triggerMonthEvent(week) {
+            const monthEvents = [
+                {
+                    week: 8,
+                    text: '📚 期中考试来临！学习值≥60可获得奖励，<60则扣减',
+                    stats: (s) => {
+                        if (s.study >= 60) {
+                            return { study: 5, money: 50 };
+                        } else {
+                            return { study: -10, happiness: -8 };
+                        }
+                    }
+                },
+                {
+                    week: 16,
+                    text: '🎄 校园圣诞晚会！社交值≥50可认识更多朋友，<50则孤独过节',
+                    stats: (s) => {
+                        if (s.social >= 50) {
+                            return { social: 8, happiness: 10 };
+                        } else {
+                            return { happiness: -15, health: -5 };
+                        }
+                    }
+                },
+                {
+                    week: 24,
+                    text: '🧧 期末复习周！健康值≥70可高效复习，<70则熬夜伤身',
+                    stats: (s) => {
+                        if (s.health >= 70) {
+                            return { study: 10, health: -3 };
+                        } else {
+                            return { study: 5, health: -15, happiness: -10 };
+                        }
+                    }
+                }
+            ];
+
+            const event = monthEvents.find(e => e.week === week);
+            if (event) {
+                logEvent(event.text, true);
+                const statChanges = event.stats(gameState.stats);
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                for (const [stat, value] of Object.entries(statChanges)) {
+                    adjustStat(stat, value, centerX, centerY);
+                }
+            }
+        }
+
+        // 随机事件（32周适配，事件密度提升）
         function triggerRandomEvent() {
             if (gameState.gameEnded) return;
             const events = [
@@ -266,10 +372,13 @@
                 { text: '🤝 社团招新表现优秀，社交值提升！', stats: { social: 9, happiness: 5 } },
                 { text: '💸 兼职遇到黑心老板，少发工资！', stats: { money: -20, happiness: -6 } },
                 { text: '🏋️ 健身房遇到教练指导，健康值提升！', stats: { health: 7, happiness: 3 } },
-                { text: '<span class="failed-exam">⚠️ 警告：学习值过低，高数挂科！</span>', stats: { study: -10, happiness: -15, money: -50 } }
+                { text: '<span class="failed-exam">⚠️ 警告：学习值过低，高数挂科！</span>', stats: { study: -10, happiness: -15, money: -50 } },
+                { text: '🎁 捡到钱包归还失主，获得感谢金！', stats: { money: 30, happiness: 8 } }, // 正向随机事件
+                { text: '☔ 出门忘带伞淋雨，健康值下降！', stats: { health: -6, happiness: -4 } } // 小负面事件
             ];
 
-            if (Math.random() < 0.7) {
+            // 32周模式下事件触发概率提升至80%，体验更紧凑
+            if (Math.random() < 0.8) {
                 const event = events[Math.floor(Math.random() * events.length)];
                 logEvent(event.text);
                 const centerX = window.innerWidth / 2;
@@ -279,79 +388,88 @@
                 }
             }
 
-            if (gameState.stats.study < 30 && Math.random() < 0.5) {
+            // 挂科检查（32周适配，触发概率随周数提升）
+            const failProb = Math.min(0.3 + (gameState.week / 32) * 0.4, 0.7); // 周数越高，挂科概率越高（30%→70%）
+            if (gameState.stats.study < 30 && Math.random() < failProb) {
                 logEvent('<span class="failed-exam">❌ 挂科惩罚：学习值过低，扣除50金钱重修！</span>');
                 adjustStat('money', -50, window.innerWidth/2, window.innerHeight/2);
                 adjustStat('happiness', -10, window.innerWidth/2, window.innerHeight/2);
             }
 
+            // 成就触发
             if (gameState.stats.study >= 90 && !gameState.achievements.includes('top-student')) {
                 logEvent('<span class="achievement">🏆 解锁成就：学霸本霸！</span>');
                 gameState.achievements.push('top-student');
-                adjustStat('money', 100, window.innerWidth/2, window.innerHeight/2);
+                adjustStat('money', 100, window.innerWidth/2, window.innerHeight/2, true);
+            }
+            // 新增成就：社交达人
+            if (gameState.stats.social >= 90 && !gameState.achievements.includes('social-star')) {
+                logEvent('<span class="achievement">🏆 解锁成就：社交达人！</span>');
+                gameState.achievements.push('social-star');
+                adjustStat('happiness', 20, window.innerWidth/2, window.innerHeight/2, true);
             }
         }
 
-        // 新增：结局判定逻辑
+        // 结局判定逻辑（32周适配，调整判定阈值）
         function getEnding() {
             const s = gameState.stats;
-            const total = (s.study + s.health + s.happiness + s.social) / 4; // 综合评分（排除金钱）
+            const total = (s.study + s.health + s.happiness + s.social) / 4; // 声明total变量
             
-            // 定义8种结局的判定条件（优先级从高到低）
+            // 32周适配：调整结局判定阈值（更贴合短周期）
             const endings = [
                 // 1. 挂科退学结局（优先级最高）
                 {
                     id: 'failed',
                     title: '❌ 挂科退学结局',
-                    desc: '你的学习值长期低于30，多门课程挂科且未补考通过，学校对你做出退学处理。一年的大学生活草草收场，重新规划你的人生吧！',
+                    desc: '你的学习值长期低于40，多门课程挂科且未补考通过，学校对你做出退学处理。32周的大学生活草草收场，重新规划你的人生吧！',
                     condition: s.study < 40,
                     className: 'ending-failed'
                 },
-                // 2. 学霸结局
+                // 2. 学霸保研结局
                 {
                     id: 'scholar',
                     title: '📖 学霸保研结局',
-                    desc: '你全年专注学习，学习值稳居年级前列，不仅拿到了国家奖学金，还成功获得了本校保研资格！同学们都称你为“卷王”，未来可期。',
-                    condition: s.study >= 85 && s.study > s.social && s.study > s.health,
+                    desc: '你32周专注学习，学习值稳居年级前列，不仅拿到了国家奖学金，还成功获得了本校保研资格！同学们都称你为“卷王”，未来可期。',
+                    condition: s.study >= 80 && s.study > s.social && s.study > s.health,
                     className: 'ending-scholar'
                 },
                 // 3. 社交达人结局
                 {
                     id: 'social',
                     title: '👑 社交达人结局',
-                    desc: '你活跃于各大社团和社交场合，社交值拉满，成为了校学生会主席，认识了各行各业的人脉，毕业前就拿到了知名企业的实习offer。',
-                    condition: s.social >= 85 && s.social > s.study && s.social > s.health,
+                    desc: '你活跃于各大社团和社交场合，32周内社交值拉满，成为了校学生会主席，认识了各行各业的人脉，毕业前就拿到了知名企业的实习offer。',
+                    condition: s.social >= 80 && s.social > s.study && s.social > s.health,
                     className: 'ending-social'
                 },
                 // 4. 健康达人结局
                 {
                     id: 'healthy',
                     title: '🏃 健康达人结局',
-                    desc: '你坚持健身和规律作息，健康值满分，成为了校运会冠军，还带动了整个宿舍一起锻炼，拥有了令人羡慕的好身体。',
-                    condition: s.health >= 85 && s.health > s.study && s.health > s.social,
+                    desc: '你坚持健身和规律作息，32周内健康值满分，成为了校运会冠军，还带动了整个宿舍一起锻炼，拥有了令人羡慕的好身体。',
+                    condition: s.health >= 80 && s.health > s.study && s.health > s.social,
                     className: 'ending-healthy'
                 },
                 // 5. 创业小老板结局
                 {
                     id: 'rich',
                     title: '💰 创业小老板结局',
-                    desc: '你利用兼职积累的资金和人脉，在校期间就开了一家小工作室，金钱值突破天际，成为了同学们口中的“创业大佬”。',
-                    condition: s.money >= 2000 && s.money > (s.study + s.social + s.health) / 3,
+                    desc: '你利用32周兼职积累的资金和人脉，在校期间就开了一家小工作室，金钱值突破天际，成为了同学们口中的“创业大佬”。',
+                    condition: s.money >= 1800 && s.money > (s.study + s.social + s.health) / 3,
                     className: 'ending-rich'
                 },
                 // 6. 摆烂躺平结局
                 {
                     id: 'lazy',
                     title: '😴 摆烂躺平结局',
-                    desc: '你全年浑浑噩噩，上课摸鱼、下课打游戏，除了快乐值还不错，其他属性都平平无奇。顺利毕业但毫无亮点，毕业后成为了“佛系青年”。',
-                    condition: total < 60 && s.happiness >= 70,
+                    desc: '你32周浑浑噩噩，上课摸鱼、下课打游戏，除了快乐值还不错，其他属性都平平无奇。顺利毕业但毫无亮点，毕业后成为了“佛系青年”。',
+                    condition: total < 55 && s.happiness >= 70,
                     className: 'ending-lazy'
                 },
                 // 7. 亚健康结局
                 {
                     id: 'unhealthy',
                     title: '😣 亚健康结局',
-                    desc: '你要么熬夜学习要么熬夜打游戏，健康值常年偏低，快乐值也一落千丈。虽然没挂科，但身体已经发出了警告，毕业后需要长期调理。',
+                    desc: '你要么熬夜学习要么熬夜打游戏，32周内健康值常年偏低，快乐值也一落千丈。虽然没挂科，但身体已经发出了警告，毕业后需要长期调理。',
                     condition: s.health < 50 && s.happiness < 50,
                     className: 'ending-unhealthy'
                 },
@@ -359,23 +477,22 @@
                 {
                     id: 'balance',
                     title: '⭐ 均衡发展结局',
-                    desc: '你兼顾了学习、社交、健康和快乐，没有特别突出的亮点，但也没有明显的短板，成为了一名“六边形战士”，顺利毕业并找到了心仪的工作。',
+                    desc: '你32周兼顾了学习、社交、健康和快乐，没有特别突出的亮点，但也没有明显的短板，成为了一名“六边形战士”，顺利毕业并找到了心仪的工作。',
                     condition: true,
                     className: 'ending-balance'
                 }
             ];
 
-            // 返回第一个满足条件的结局
             return endings.find(ending => ending.condition);
         }
 
-        // 新增：显示结局弹窗
+        // 显示结局弹窗（修复核心错误：定义total变量）
         function showEndingModal() {
             gameState.gameEnded = true;
             const ending = getEnding();
             const s = gameState.stats;
+            const total = (s.study + s.health + s.happiness + s.social) / 4; // 修复：声明total变量
             
-            // 创建结局弹窗
             const modal = document.createElement('div');
             modal.className = 'ending-modal';
             modal.innerHTML = `
@@ -383,7 +500,7 @@
                     <h2 class="ending-title ${ending.className}">${ending.title}</h2>
                     <div class="ending-stats">
                         <p>学习：${s.study} | 健康：${s.health} | 快乐：${s.happiness}</p>
-                        <p>金钱：${s.money} | 社交：${s.social} | 综合评分：${((s.study + s.health + s.happiness + s.social)/4).toFixed(1)}</p>
+                        <p>金钱：${s.money} | 社交：${s.social} | 综合评分：${total.toFixed(1)}</p>
                     </div>
                     <p class="ending-desc">${ending.desc}</p>
                     <button class="restart-btn" id="restart-btn">🔄 重新开始游戏</button>
@@ -391,16 +508,12 @@
             `;
             document.body.appendChild(modal);
 
-            // 绑定重新开始按钮
             document.getElementById('restart-btn').addEventListener('click', restartGame);
-
-            // 禁用所有操作按钮
             document.querySelectorAll('.action-btn').forEach(btn => btn.disabled = true);
         }
 
-        // 新增：重新开始游戏
+        // 重新开始游戏
         function restartGame() {
-            // 重置游戏状态
             gameState.week = 1;
             gameState.stats = {
                 study: 50,
@@ -418,24 +531,17 @@
             gameState.achievements = [];
             gameState.gameEnded = false;
 
-            // 清空日志
             elements.eventLog.innerHTML = '';
-
-            // 移除结局弹窗
             const modal = document.querySelector('.ending-modal');
             if (modal) modal.remove();
-
-            // 启用操作按钮
             document.querySelectorAll('.action-btn').forEach(btn => btn.disabled = false);
-
-            // 重新初始化
             initGame();
         }
 
         // 绑定操作按钮事件
         document.querySelectorAll('.action-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                if (gameState.gameEnded) return; // 游戏结束后不响应操作
+                if (gameState.gameEnded) return;
                 
                 const action = btn.dataset.action;
                 const eventX = e.clientX;
@@ -488,20 +594,26 @@
                 // 每周推进 + 随机事件
                 gameState.week++;
                 logEvent(`📅 进入第 ${gameState.week} 周`);
+                
+                // 触发月度大事件（8/16/24周）
+                if (gameState.monthEvents.includes(gameState.week)) {
+                    triggerMonthEvent(gameState.week);
+                }
+                
                 triggerRandomEvent();
                 updateUI();
 
-                // 游戏结束判定（触发结局）
-                if (gameState.week > 52 && !gameState.gameEnded) {
-                    logEvent('🎓 大学第一年结束！正在为你生成结局...');
-                    setTimeout(showEndingModal, 1000); // 延迟1秒显示结局，提升体验
+                // 游戏结束判定（32周结束）
+                if (gameState.week > 32 && !gameState.gameEnded) {
+                    logEvent('🎓 大学32周生活结束！正在为你生成结局...');
+                    setTimeout(showEndingModal, 1000);
                 }
             });
         });
 
         // 初始化
         function initGame() {
-            logEvent('🎮 游戏开始！欢迎来到大学生活模拟器');
+            logEvent('🎮 游戏开始！32周大学生活模拟器启动');
             resetDailyGoal();
             updateUI();
         }
